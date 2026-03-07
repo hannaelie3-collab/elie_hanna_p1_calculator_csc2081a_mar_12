@@ -53,14 +53,10 @@
             btn_nth_root = new Button();
             btn_square = new Button();
             btn_reciprocal = new Button();
-            tableLayoutPanel2 = new TableLayoutPanel();
-            lbl_operand_right = new Label();
-            lbl_operator = new Label();
-            lbl_operand_left = new Label();
             lbl_result = new Label();
             button5 = new Button();
+            lbl_expression = new Label();
             tableLayoutPanel1.SuspendLayout();
-            tableLayoutPanel2.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -422,66 +418,18 @@
             btn_reciprocal.Text = "1/x";
             btn_reciprocal.UseVisualStyleBackColor = false;
             // 
-            // tableLayoutPanel2
-            // 
-            tableLayoutPanel2.ColumnCount = 3;
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel2.Controls.Add(lbl_operand_right, 2, 0);
-            tableLayoutPanel2.Controls.Add(lbl_operator, 1, 0);
-            tableLayoutPanel2.Font = new Font("Microsoft Sans Serif", 36F);
-            tableLayoutPanel2.Location = new Point(236, 115);
-            tableLayoutPanel2.Margin = new Padding(4);
-            tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 1;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.Size = new Size(151, 69);
-            tableLayoutPanel2.TabIndex = 4;
-            // 
-            // lbl_operand_right
-            // 
-            lbl_operand_right.Dock = DockStyle.Fill;
-            lbl_operand_right.Font = new Font("Segoe UI", 36F);
-            lbl_operand_right.Location = new Point(104, 0);
-            lbl_operand_right.Margin = new Padding(4, 0, 4, 0);
-            lbl_operand_right.Name = "lbl_operand_right";
-            lbl_operand_right.Size = new Size(43, 69);
-            lbl_operand_right.TabIndex = 1;
-            lbl_operand_right.TextAlign = ContentAlignment.MiddleRight;
-            // 
-            // lbl_operator
-            // 
-            lbl_operator.Dock = DockStyle.Fill;
-            lbl_operator.Font = new Font("Microsoft Sans Serif", 36F);
-            lbl_operator.Location = new Point(54, 0);
-            lbl_operator.Margin = new Padding(4, 0, 4, 0);
-            lbl_operator.Name = "lbl_operator";
-            lbl_operator.Size = new Size(42, 69);
-            lbl_operator.TabIndex = 3;
-            lbl_operator.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lbl_operand_left
-            // 
-            lbl_operand_left.BackColor = SystemColors.ActiveCaption;
-            lbl_operand_left.Font = new Font("Segoe UI", 36F);
-            lbl_operand_left.Location = new Point(99, 115);
-            lbl_operand_left.Margin = new Padding(4, 0, 4, 0);
-            lbl_operand_left.Name = "lbl_operand_left";
-            lbl_operand_left.Size = new Size(42, 69);
-            lbl_operand_left.TabIndex = 2;
-            lbl_operand_left.TextAlign = ContentAlignment.MiddleRight;
-            // 
             // lbl_result
             // 
             lbl_result.AutoSize = true;
+            lbl_result.Dock = DockStyle.Bottom;
             lbl_result.Font = new Font("Segoe UI", 36F);
-            lbl_result.Location = new Point(162, 195);
+            lbl_result.Location = new Point(0, 197);
             lbl_result.Margin = new Padding(4, 0, 4, 0);
             lbl_result.Name = "lbl_result";
             lbl_result.Size = new Size(54, 65);
             lbl_result.TabIndex = 5;
             lbl_result.Text = "0";
+            lbl_result.TextAlign = ContentAlignment.MiddleRight;
             // 
             // button5
             // 
@@ -493,16 +441,25 @@
             button5.Text = "☰";
             button5.UseVisualStyleBackColor = true;
             // 
+            // lbl_expression
+            // 
+            lbl_expression.AutoSize = true;
+            lbl_expression.BackColor = SystemColors.ActiveCaption;
+            lbl_expression.Location = new Point(222, 152);
+            lbl_expression.Name = "lbl_expression";
+            lbl_expression.Size = new Size(63, 25);
+            lbl_expression.TabIndex = 7;
+            lbl_expression.Text = "label1";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(11F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.None;
             ClientSize = new Size(387, 605);
-            Controls.Add(lbl_operand_left);
+            Controls.Add(lbl_expression);
             Controls.Add(button5);
             Controls.Add(lbl_result);
-            Controls.Add(tableLayoutPanel2);
             Controls.Add(tableLayoutPanel1);
             Font = new Font("Segoe UI", 14.25F);
             ForeColor = SystemColors.ActiveCaptionText;
@@ -511,7 +468,6 @@
             Name = "Form1";
             Text = "Form1";
             tableLayoutPanel1.ResumeLayout(false);
-            tableLayoutPanel2.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -543,13 +499,10 @@
         private Button btn_backspace;
         private Button btn_divide;
         private Button btn_multiply;
-        private TableLayoutPanel tableLayoutPanel2;
-        private Label lbl_operand_right;
-        private Label lbl_operator;
-        private Label lbl_operand_left;
         private Label lbl_result;
         private ContextMenuStrip contextMenuStrip1;
         private ContextMenuStrip contextMenuStrip2;
         private Button button5;
+        private Label lbl_expression;
     }
 }
