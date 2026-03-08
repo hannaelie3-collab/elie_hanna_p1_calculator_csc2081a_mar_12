@@ -69,30 +69,27 @@
             lbl_expression = new Label();
             lbl_result = new Label();
             tabPage2 = new TabPage();
+            lbl_fx_status = new Label();
             lbl_fx_display = new Label();
             tableLayoutPanel2 = new TableLayoutPanel();
-            button9 = new Button();
-            btn_fx_from_mode = new Button();
-            btn_fx_decimal = new Button();
-            btn_fx_digit_0 = new Button();
-            btn_fx_clear_all = new Button();
-            btn_fx_digit_1 = new Button();
-            btn_fx_digit_2 = new Button();
-            btn_fx_digit_3 = new Button();
-            btn_fx_digit_4 = new Button();
-            btn_fx_digit_5 = new Button();
-            btn_fx_digit_6 = new Button();
-            btn_fx_digit_7 = new Button();
-            btn_fx_digit_8 = new Button();
-            btn_fx_digit_9 = new Button();
-            btn_fx_currency_lbp = new Button();
-            btn_fx_currency_eur = new Button();
-            btn_fx_currency_usd = new Button();
+            cmb_fx_from = new ComboBox();
             button2 = new Button();
+            btn_fx_digit_7 = new Button();
+            btn_fx_digit_4 = new Button();
+            btn_fx_digit_1 = new Button();
+            btn_fx_decimal = new Button();
+            btn_fx_convert = new Button();
+            btn_fx_paste = new Button();
+            btn_fx_digit_8 = new Button();
+            btn_fx_digit_5 = new Button();
+            btn_fx_digit_2 = new Button();
+            btn_fx_digit_0 = new Button();
+            cmb_fx_to = new ComboBox();
             btn_fx_backspace = new Button();
-            button7 = new Button();
-            btn_fx_clear_entry = new Button();
-            lbl_fx_status = new Label();
+            btn_fx_digit_9 = new Button();
+            btn_fx_digit_6 = new Button();
+            btn_fx_digit_3 = new Button();
+            btn_fx_clear_all = new Button();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -676,6 +673,17 @@
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
             // 
+            // lbl_fx_status
+            // 
+            lbl_fx_status.AutoSize = true;
+            lbl_fx_status.BackColor = SystemColors.ButtonHighlight;
+            lbl_fx_status.Dock = DockStyle.Fill;
+            lbl_fx_status.Location = new Point(3, 68);
+            lbl_fx_status.Name = "lbl_fx_status";
+            lbl_fx_status.Size = new Size(63, 25);
+            lbl_fx_status.TabIndex = 15;
+            lbl_fx_status.Text = "label1";
+            // 
             // lbl_fx_display
             // 
             lbl_fx_display.AutoSize = true;
@@ -692,316 +700,277 @@
             // tableLayoutPanel2
             // 
             tableLayoutPanel2.ColumnCount = 3;
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
-            tableLayoutPanel2.Controls.Add(button9, 1, 1);
-            tableLayoutPanel2.Controls.Add(btn_fx_from_mode, 0, 0);
-            tableLayoutPanel2.Controls.Add(btn_fx_decimal, 0, 6);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_0, 1, 6);
-            tableLayoutPanel2.Controls.Add(btn_fx_clear_all, 2, 6);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_1, 0, 5);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_2, 1, 5);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_3, 2, 5);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_4, 0, 4);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_5, 1, 4);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_6, 2, 4);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_7, 0, 3);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_8, 1, 3);
-            tableLayoutPanel2.Controls.Add(btn_fx_digit_9, 2, 3);
-            tableLayoutPanel2.Controls.Add(btn_fx_currency_lbp, 2, 2);
-            tableLayoutPanel2.Controls.Add(btn_fx_currency_eur, 1, 2);
-            tableLayoutPanel2.Controls.Add(btn_fx_currency_usd, 0, 2);
+            tableLayoutPanel2.Controls.Add(cmb_fx_from, 0, 0);
             tableLayoutPanel2.Controls.Add(button2, 0, 1);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_7, 0, 2);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_4, 0, 3);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_1, 0, 4);
+            tableLayoutPanel2.Controls.Add(btn_fx_decimal, 0, 5);
+            tableLayoutPanel2.Controls.Add(btn_fx_convert, 1, 0);
+            tableLayoutPanel2.Controls.Add(btn_fx_paste, 1, 1);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_8, 1, 2);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_5, 1, 3);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_2, 1, 4);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_0, 1, 5);
+            tableLayoutPanel2.Controls.Add(cmb_fx_to, 2, 0);
             tableLayoutPanel2.Controls.Add(btn_fx_backspace, 2, 1);
-            tableLayoutPanel2.Controls.Add(button7, 2, 0);
-            tableLayoutPanel2.Controls.Add(btn_fx_clear_entry, 1, 0);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_9, 2, 2);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_6, 2, 3);
+            tableLayoutPanel2.Controls.Add(btn_fx_digit_3, 2, 4);
+            tableLayoutPanel2.Controls.Add(btn_fx_clear_all, 2, 5);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
             tableLayoutPanel2.Location = new Point(3, 175);
             tableLayoutPanel2.Margin = new Padding(3, 2, 3, 2);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 7;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
+            tableLayoutPanel2.RowCount = 6;
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666641F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666679F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666679F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666679F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666679F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666679F));
             tableLayoutPanel2.Size = new Size(396, 322);
             tableLayoutPanel2.TabIndex = 11;
             // 
-            // button9
+            // cmb_fx_from
             // 
-            button9.BackColor = SystemColors.ButtonHighlight;
-            button9.Font = new Font("Segoe UI", 14.25F);
-            button9.Location = new Point(134, 48);
-            button9.Margin = new Padding(3, 2, 3, 2);
-            button9.Name = "button9";
-            button9.Size = new Size(125, 42);
-            button9.TabIndex = 34;
-            button9.Text = "Past";
-            button9.UseVisualStyleBackColor = false;
+            cmb_fx_from.FormattingEnabled = true;
+            cmb_fx_from.Items.AddRange(new object[] { "USD", "EUR", "LBP" });
+            cmb_fx_from.Location = new Point(3, 3);
+            cmb_fx_from.Name = "cmb_fx_from";
+            cmb_fx_from.Size = new Size(121, 33);
+            cmb_fx_from.TabIndex = 16;
+            cmb_fx_from.Text = "From";
             // 
-            // btn_fx_from_mode
+            // button2
             // 
-            btn_fx_from_mode.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_from_mode.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_from_mode.Location = new Point(3, 2);
-            btn_fx_from_mode.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_from_mode.Name = "btn_fx_from_mode";
-            btn_fx_from_mode.Size = new Size(125, 42);
-            btn_fx_from_mode.TabIndex = 32;
-            btn_fx_from_mode.Text = "From";
-            btn_fx_from_mode.UseVisualStyleBackColor = false;
+            button2.BackColor = SystemColors.ButtonHighlight;
+            button2.Dock = DockStyle.Fill;
+            button2.Font = new Font("Segoe UI", 14.25F);
+            button2.Location = new Point(3, 55);
+            button2.Margin = new Padding(3, 2, 3, 2);
+            button2.Name = "button2";
+            button2.Size = new Size(125, 49);
+            button2.TabIndex = 1;
+            button2.Text = "Copy";
+            button2.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_7
+            // 
+            btn_fx_digit_7.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_7.Dock = DockStyle.Fill;
+            btn_fx_digit_7.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_7.Location = new Point(3, 108);
+            btn_fx_digit_7.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_7.Name = "btn_fx_digit_7";
+            btn_fx_digit_7.Size = new Size(125, 49);
+            btn_fx_digit_7.TabIndex = 11;
+            btn_fx_digit_7.Text = "7";
+            btn_fx_digit_7.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_4
+            // 
+            btn_fx_digit_4.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_4.Dock = DockStyle.Fill;
+            btn_fx_digit_4.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_4.Location = new Point(3, 161);
+            btn_fx_digit_4.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_4.Name = "btn_fx_digit_4";
+            btn_fx_digit_4.Size = new Size(125, 49);
+            btn_fx_digit_4.TabIndex = 16;
+            btn_fx_digit_4.Text = "4";
+            btn_fx_digit_4.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_1
+            // 
+            btn_fx_digit_1.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_1.Dock = DockStyle.Fill;
+            btn_fx_digit_1.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_1.Location = new Point(3, 214);
+            btn_fx_digit_1.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_1.Name = "btn_fx_digit_1";
+            btn_fx_digit_1.Size = new Size(125, 49);
+            btn_fx_digit_1.TabIndex = 21;
+            btn_fx_digit_1.Text = "1";
+            btn_fx_digit_1.UseVisualStyleBackColor = false;
             // 
             // btn_fx_decimal
             // 
             btn_fx_decimal.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_decimal.Dock = DockStyle.Fill;
             btn_fx_decimal.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_decimal.Location = new Point(3, 278);
+            btn_fx_decimal.Location = new Point(3, 267);
             btn_fx_decimal.Margin = new Padding(3, 2, 3, 2);
             btn_fx_decimal.Name = "btn_fx_decimal";
-            btn_fx_decimal.Size = new Size(125, 42);
+            btn_fx_decimal.Size = new Size(125, 53);
             btn_fx_decimal.TabIndex = 28;
             btn_fx_decimal.Text = ".";
             btn_fx_decimal.UseVisualStyleBackColor = false;
             // 
+            // btn_fx_convert
+            // 
+            btn_fx_convert.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_convert.Dock = DockStyle.Fill;
+            btn_fx_convert.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_convert.Location = new Point(134, 2);
+            btn_fx_convert.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_convert.Name = "btn_fx_convert";
+            btn_fx_convert.Size = new Size(126, 49);
+            btn_fx_convert.TabIndex = 3;
+            btn_fx_convert.Text = "Convert";
+            btn_fx_convert.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_paste
+            // 
+            btn_fx_paste.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_paste.Dock = DockStyle.Fill;
+            btn_fx_paste.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_paste.Location = new Point(134, 55);
+            btn_fx_paste.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_paste.Name = "btn_fx_paste";
+            btn_fx_paste.Size = new Size(126, 49);
+            btn_fx_paste.TabIndex = 34;
+            btn_fx_paste.Text = "Paste";
+            btn_fx_paste.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_8
+            // 
+            btn_fx_digit_8.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_8.Dock = DockStyle.Fill;
+            btn_fx_digit_8.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_8.Location = new Point(134, 108);
+            btn_fx_digit_8.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_8.Name = "btn_fx_digit_8";
+            btn_fx_digit_8.Size = new Size(126, 49);
+            btn_fx_digit_8.TabIndex = 12;
+            btn_fx_digit_8.Text = "8";
+            btn_fx_digit_8.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_5
+            // 
+            btn_fx_digit_5.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_5.Dock = DockStyle.Fill;
+            btn_fx_digit_5.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_5.Location = new Point(134, 161);
+            btn_fx_digit_5.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_5.Name = "btn_fx_digit_5";
+            btn_fx_digit_5.Size = new Size(126, 49);
+            btn_fx_digit_5.TabIndex = 17;
+            btn_fx_digit_5.Text = "5";
+            btn_fx_digit_5.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_2
+            // 
+            btn_fx_digit_2.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_2.Dock = DockStyle.Fill;
+            btn_fx_digit_2.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_2.Location = new Point(134, 214);
+            btn_fx_digit_2.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_2.Name = "btn_fx_digit_2";
+            btn_fx_digit_2.Size = new Size(126, 49);
+            btn_fx_digit_2.TabIndex = 22;
+            btn_fx_digit_2.Text = "2";
+            btn_fx_digit_2.UseVisualStyleBackColor = false;
+            // 
             // btn_fx_digit_0
             // 
             btn_fx_digit_0.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_0.Dock = DockStyle.Fill;
             btn_fx_digit_0.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_0.Location = new Point(134, 278);
+            btn_fx_digit_0.Location = new Point(134, 267);
             btn_fx_digit_0.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_0.Name = "btn_fx_digit_0";
-            btn_fx_digit_0.Size = new Size(126, 42);
+            btn_fx_digit_0.Size = new Size(126, 53);
             btn_fx_digit_0.TabIndex = 27;
             btn_fx_digit_0.Text = "0";
             btn_fx_digit_0.UseVisualStyleBackColor = false;
+            // 
+            // cmb_fx_to
+            // 
+            cmb_fx_to.FormattingEnabled = true;
+            cmb_fx_to.Items.AddRange(new object[] { "USD", "EUR", "LBP" });
+            cmb_fx_to.Location = new Point(266, 3);
+            cmb_fx_to.Name = "cmb_fx_to";
+            cmb_fx_to.Size = new Size(121, 33);
+            cmb_fx_to.TabIndex = 35;
+            cmb_fx_to.Text = "To";
+            // 
+            // btn_fx_backspace
+            // 
+            btn_fx_backspace.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_backspace.Dock = DockStyle.Fill;
+            btn_fx_backspace.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_backspace.Location = new Point(266, 55);
+            btn_fx_backspace.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_backspace.Name = "btn_fx_backspace";
+            btn_fx_backspace.Size = new Size(127, 49);
+            btn_fx_backspace.TabIndex = 31;
+            btn_fx_backspace.Text = "⌫";
+            btn_fx_backspace.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_9
+            // 
+            btn_fx_digit_9.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_9.Dock = DockStyle.Fill;
+            btn_fx_digit_9.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_9.Location = new Point(266, 108);
+            btn_fx_digit_9.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_9.Name = "btn_fx_digit_9";
+            btn_fx_digit_9.Size = new Size(127, 49);
+            btn_fx_digit_9.TabIndex = 13;
+            btn_fx_digit_9.Text = "9";
+            btn_fx_digit_9.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_6
+            // 
+            btn_fx_digit_6.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_6.Dock = DockStyle.Fill;
+            btn_fx_digit_6.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_6.Location = new Point(266, 161);
+            btn_fx_digit_6.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_6.Name = "btn_fx_digit_6";
+            btn_fx_digit_6.Size = new Size(127, 49);
+            btn_fx_digit_6.TabIndex = 18;
+            btn_fx_digit_6.Text = "6";
+            btn_fx_digit_6.UseVisualStyleBackColor = false;
+            // 
+            // btn_fx_digit_3
+            // 
+            btn_fx_digit_3.BackColor = SystemColors.ButtonHighlight;
+            btn_fx_digit_3.Dock = DockStyle.Fill;
+            btn_fx_digit_3.Font = new Font("Segoe UI", 14.25F);
+            btn_fx_digit_3.Location = new Point(266, 214);
+            btn_fx_digit_3.Margin = new Padding(3, 2, 3, 2);
+            btn_fx_digit_3.Name = "btn_fx_digit_3";
+            btn_fx_digit_3.Size = new Size(127, 49);
+            btn_fx_digit_3.TabIndex = 23;
+            btn_fx_digit_3.Text = "3";
+            btn_fx_digit_3.UseVisualStyleBackColor = false;
             // 
             // btn_fx_clear_all
             // 
             btn_fx_clear_all.BackColor = SystemColors.MenuHighlight;
             btn_fx_clear_all.Cursor = Cursors.Hand;
+            btn_fx_clear_all.Dock = DockStyle.Fill;
             btn_fx_clear_all.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btn_fx_clear_all.ForeColor = SystemColors.ActiveCaptionText;
-            btn_fx_clear_all.Location = new Point(266, 278);
+            btn_fx_clear_all.Location = new Point(266, 267);
             btn_fx_clear_all.Margin = new Padding(3, 2, 3, 2);
             btn_fx_clear_all.Name = "btn_fx_clear_all";
-            btn_fx_clear_all.Size = new Size(126, 42);
+            btn_fx_clear_all.Size = new Size(127, 53);
             btn_fx_clear_all.TabIndex = 29;
             btn_fx_clear_all.Text = "C";
             btn_fx_clear_all.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_1
-            // 
-            btn_fx_digit_1.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_1.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_1.Location = new Point(3, 232);
-            btn_fx_digit_1.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_1.Name = "btn_fx_digit_1";
-            btn_fx_digit_1.Size = new Size(125, 42);
-            btn_fx_digit_1.TabIndex = 21;
-            btn_fx_digit_1.Text = "1";
-            btn_fx_digit_1.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_2
-            // 
-            btn_fx_digit_2.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_2.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_2.Location = new Point(134, 232);
-            btn_fx_digit_2.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_2.Name = "btn_fx_digit_2";
-            btn_fx_digit_2.Size = new Size(126, 42);
-            btn_fx_digit_2.TabIndex = 22;
-            btn_fx_digit_2.Text = "2";
-            btn_fx_digit_2.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_3
-            // 
-            btn_fx_digit_3.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_3.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_3.Location = new Point(266, 232);
-            btn_fx_digit_3.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_3.Name = "btn_fx_digit_3";
-            btn_fx_digit_3.Size = new Size(126, 42);
-            btn_fx_digit_3.TabIndex = 23;
-            btn_fx_digit_3.Text = "3";
-            btn_fx_digit_3.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_4
-            // 
-            btn_fx_digit_4.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_4.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_4.Location = new Point(3, 186);
-            btn_fx_digit_4.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_4.Name = "btn_fx_digit_4";
-            btn_fx_digit_4.Size = new Size(125, 42);
-            btn_fx_digit_4.TabIndex = 16;
-            btn_fx_digit_4.Text = "4";
-            btn_fx_digit_4.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_5
-            // 
-            btn_fx_digit_5.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_5.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_5.Location = new Point(134, 186);
-            btn_fx_digit_5.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_5.Name = "btn_fx_digit_5";
-            btn_fx_digit_5.Size = new Size(126, 42);
-            btn_fx_digit_5.TabIndex = 17;
-            btn_fx_digit_5.Text = "5";
-            btn_fx_digit_5.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_6
-            // 
-            btn_fx_digit_6.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_6.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_6.Location = new Point(266, 186);
-            btn_fx_digit_6.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_6.Name = "btn_fx_digit_6";
-            btn_fx_digit_6.Size = new Size(126, 42);
-            btn_fx_digit_6.TabIndex = 18;
-            btn_fx_digit_6.Text = "6";
-            btn_fx_digit_6.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_7
-            // 
-            btn_fx_digit_7.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_7.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_7.Location = new Point(3, 140);
-            btn_fx_digit_7.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_7.Name = "btn_fx_digit_7";
-            btn_fx_digit_7.Size = new Size(125, 42);
-            btn_fx_digit_7.TabIndex = 11;
-            btn_fx_digit_7.Text = "7";
-            btn_fx_digit_7.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_8
-            // 
-            btn_fx_digit_8.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_8.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_8.Location = new Point(134, 140);
-            btn_fx_digit_8.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_8.Name = "btn_fx_digit_8";
-            btn_fx_digit_8.Size = new Size(126, 42);
-            btn_fx_digit_8.TabIndex = 12;
-            btn_fx_digit_8.Text = "8";
-            btn_fx_digit_8.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_digit_9
-            // 
-            btn_fx_digit_9.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_digit_9.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_9.Location = new Point(266, 140);
-            btn_fx_digit_9.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_digit_9.Name = "btn_fx_digit_9";
-            btn_fx_digit_9.Size = new Size(126, 42);
-            btn_fx_digit_9.TabIndex = 13;
-            btn_fx_digit_9.Text = "9";
-            btn_fx_digit_9.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_currency_lbp
-            // 
-            btn_fx_currency_lbp.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_currency_lbp.Font = new Font("Lucida Calligraphy", 14.25F);
-            btn_fx_currency_lbp.Location = new Point(266, 94);
-            btn_fx_currency_lbp.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_currency_lbp.Name = "btn_fx_currency_lbp";
-            btn_fx_currency_lbp.Size = new Size(126, 42);
-            btn_fx_currency_lbp.TabIndex = 8;
-            btn_fx_currency_lbp.Text = "LBP";
-            btn_fx_currency_lbp.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_currency_eur
-            // 
-            btn_fx_currency_eur.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_currency_eur.Font = new Font("Lucida Calligraphy", 14.25F);
-            btn_fx_currency_eur.Location = new Point(134, 94);
-            btn_fx_currency_eur.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_currency_eur.Name = "btn_fx_currency_eur";
-            btn_fx_currency_eur.Size = new Size(126, 42);
-            btn_fx_currency_eur.TabIndex = 7;
-            btn_fx_currency_eur.Text = "EU";
-            btn_fx_currency_eur.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_currency_usd
-            // 
-            btn_fx_currency_usd.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_currency_usd.Font = new Font("Lucida Calligraphy", 14.25F);
-            btn_fx_currency_usd.Location = new Point(3, 94);
-            btn_fx_currency_usd.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_currency_usd.Name = "btn_fx_currency_usd";
-            btn_fx_currency_usd.Size = new Size(125, 42);
-            btn_fx_currency_usd.TabIndex = 6;
-            btn_fx_currency_usd.Text = "USD";
-            btn_fx_currency_usd.UseVisualStyleBackColor = false;
-            // 
-            // button2
-            // 
-            button2.BackColor = SystemColors.ButtonHighlight;
-            button2.Font = new Font("Segoe UI", 14.25F);
-            button2.Location = new Point(3, 48);
-            button2.Margin = new Padding(3, 2, 3, 2);
-            button2.Name = "button2";
-            button2.Size = new Size(125, 42);
-            button2.TabIndex = 1;
-            button2.Text = "Copy";
-            button2.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_backspace
-            // 
-            btn_fx_backspace.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_backspace.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_backspace.Location = new Point(266, 48);
-            btn_fx_backspace.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_backspace.Name = "btn_fx_backspace";
-            btn_fx_backspace.Size = new Size(126, 42);
-            btn_fx_backspace.TabIndex = 31;
-            btn_fx_backspace.Text = "⌫";
-            btn_fx_backspace.UseVisualStyleBackColor = false;
-            // 
-            // button7
-            // 
-            button7.BackColor = SystemColors.ButtonHighlight;
-            button7.Font = new Font("Segoe UI", 14.25F);
-            button7.Location = new Point(266, 2);
-            button7.Margin = new Padding(3, 2, 3, 2);
-            button7.Name = "button7";
-            button7.Size = new Size(125, 42);
-            button7.TabIndex = 33;
-            button7.Text = "To";
-            button7.UseVisualStyleBackColor = false;
-            // 
-            // btn_fx_clear_entry
-            // 
-            btn_fx_clear_entry.BackColor = SystemColors.ButtonHighlight;
-            btn_fx_clear_entry.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_clear_entry.Location = new Point(134, 2);
-            btn_fx_clear_entry.Margin = new Padding(3, 2, 3, 2);
-            btn_fx_clear_entry.Name = "btn_fx_clear_entry";
-            btn_fx_clear_entry.Size = new Size(126, 42);
-            btn_fx_clear_entry.TabIndex = 3;
-            btn_fx_clear_entry.Text = "CE";
-            btn_fx_clear_entry.UseVisualStyleBackColor = false;
-            // 
-            // lbl_fx_status
-            // 
-            lbl_fx_status.AutoSize = true;
-            lbl_fx_status.BackColor = SystemColors.ButtonHighlight;
-            lbl_fx_status.Dock = DockStyle.Fill;
-            lbl_fx_status.Location = new Point(3, 68);
-            lbl_fx_status.Name = "lbl_fx_status";
-            lbl_fx_status.Size = new Size(63, 25);
-            lbl_fx_status.TabIndex = 15;
-            lbl_fx_status.Text = "label1";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(11F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.None;
-            ClientSize = new Size(410, 538);
+            ClientSize = new Size(840, 538);
             Controls.Add(tabControl1);
             Font = new Font("Segoe UI", 14.25F);
             ForeColor = SystemColors.ActiveCaptionText;
@@ -1020,8 +989,8 @@
         }
 
         #endregion
-        private ContextMenuStrip contextMenuStrip1;
-        private ContextMenuStrip contextMenuStrip2;
+        //private ContextMenuStrip contextMenuStrip1;
+        //private ContextMenuStrip contextMenuStrip2;
         private TabControl tabControl1;
         private TabPage tabPage1;
         private TableLayoutPanel tableLayoutPanel1;
@@ -1053,7 +1022,7 @@
         private TableLayoutPanel tableLayoutPanel2;
         private Button button2;
         private Button btn_fx_decimal;
-        private Button btn_fx_clear_entry;
+        private Button btn_fx_convert;
         private Button btn_fx_digit_0;
         private Button btn_fx_digit_3;
         private Button btn_fx_digit_2;
@@ -1064,9 +1033,6 @@
         private Button btn_fx_digit_9;
         private Button btn_fx_digit_8;
         private Button btn_fx_digit_7;
-        private Button btn_fx_currency_lbp;
-        private Button btn_fx_currency_eur;
-        private Button btn_fx_currency_usd;
         private Button btn_fx_backspace;
         private Button btn_fx_clear_all;
         private Button btn_percent;
@@ -1083,10 +1049,10 @@
         private Button btn_clear_all;
         private Button btn_second;
         private Label lbl_fx_display;
-        private Button btn_fx_from_mode;
-        private Button button7;
-        private Button button9;
+        private Button btn_fx_paste;
         private Label lbl_fx_status;
+        private ComboBox cmb_fx_from;
+        private ComboBox cmb_fx_to;
         //private ToolTip toolTip1;
     }
 }
