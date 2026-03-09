@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -11,89 +12,40 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
 {
     public partial class Form1 : Form
     {
-        #region Variables
-
-        #region Calculator Variables
-
-        // Stores the left side value of a binary operation (e.g., in "5 + 3", this would be 5)
-        private double leftOperand = 0;
-
-        // Holds the current pending operator (+, -, X, ÷, etc.) waiting for the right operand
-        private string pendingOperator = "";
-
-        // Flag indicating whether the user is currently typing a number
+        private readonly List<string> tokens = new();   // e.g. ["8", "+", "(", "2", "+", "5", ")"]
+        private string lastBinaryOp = "";
+        private double lastBinaryRight = 0;
+        private bool canRepeatEquals = false;
         private bool isEnteringNumber = false;
 
-        // Stores the right operand from the last calculation for repeat operations when pressing equals multiple times
+        private double leftOperand = 0;
+        private string pendingOperator = "";
         private double lastRightOperand = 0;
-
-        // Stores the operator from the last calculation for repeat operations
         private string lastOperator = "";
 
-        // Flag indicating whether the calculator is in "2nd" mode (shows alternate functions like sin, cos, tan)
         private bool isSecondMode = false;
-
-        // Stores the default background color of the "2nd" button when not active
         private Color secondDefaultBackColor = SystemColors.ActiveBorder;
-
-        #endregion
-
-        #region FX Converter Variables
-
-        // Flag indicating whether the user is currently entering an amount in the FX converter
         private bool fxIsEnteringAmount = false;
-
-        // Shared HttpClient for making API requests to the currency exchange rate service
         private static readonly HttpClient fxHttp = new HttpClient();
-
-        #endregion
-
-        #endregion
-
-        #region Constants
-
-        // Tolerance for checking if a double is effectively an integer
+        private const int MAX_RESULT_LEN = 14;
+        private const string SCI_FORMAT = "0.###E+0";
         private const double INTEGER_TOLERANCE = 1e-12;
-
-        // Maximum factorial value that can be calculated without overflow
         private const int MAX_FACTORIAL_INPUT = 170;
 
-        #endregion
-
-        // ------ Form1 Constructor ------
-        // Initializes the calculator form, wires up all button event handlers,
-        // and sets initial state for both calculator and FX converter tabs
         public Form1()
         {
-            // Initialize all form components (auto-generated code)
             InitializeComponent();
 
-            // Wire all buttons in the calculator tab to the main click handler
             WireAllButtonsToOneHandlerIterative(tabPage1, Button_Click);
-
-            // Wire all buttons in the FX converter tab to the FX click handler
             WireAllButtonsToOneHandlerIterative(tabPage2, Button_Click_FX);
 
-            // Reset calculator to initial state
             ClearAll();
-
-            // Ensure calculator starts in normal mode (not "2nd" mode)
             SetSecondMode(false);
 
-            // Initialize the currency dropdown combo boxes
             FxInitCombos();
-
-            // Reset FX converter to initial state
             FxClearAll();
         }
 
-        #region Event Handlers
-
-        #region Calculator Event Handlers
-
-        // ------ Button_Click ------
-        // Main event handler for all calculator buttons (tabPage1)
-        // Routes button clicks to appropriate operations based on button text
         private void Button_Click(object sender, EventArgs e)
         {
             if (sender is not Button btn) return;
@@ -103,6 +55,14 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             {
                 case "2nd":
                     ToggleSecondMode();
+                    break;
+
+                case "(":
+                    PressLeftParen();
+                    break;
+
+                case ")":
+                    PressRightParen();
                     break;
 
                 case ".":
@@ -121,7 +81,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     ClearEntry();
                     break;
 
-                case "⌫":
+                case "âŒ«":
                     BackspaceCommon(lbl_result, ref isEnteringNumber, ClearEntry);
                     break;
 
@@ -133,11 +93,11 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     Reciprocal();
                     break;
 
-                case "x²":
+                case "xÂ²":
                     Square();
                     break;
 
-                case "²√x":
+                case "Â²âˆšx":
                     Sqrt();
                     break;
 
@@ -145,7 +105,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     Abs();
                     break;
 
-                case "π":
+                case "Ï€":
                     InsertConstant(Math.PI);
                     break;
 
@@ -165,7 +125,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     Log10();
                     break;
 
-                case "10ˣ" or "10^x":
+                case "10Ë£" or "10^x":
                     TenPowerX();
                     break;
 
@@ -185,7 +145,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     FactorialUnary();
                     break;
 
-                case "+" or "-" or "X" or "÷" or "mod" or "xʸ":
+                case "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸":
                     PressOperator(v);
                     break;
 
@@ -200,19 +160,11 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             }
         }
 
-        #endregion
-
-        #region FX Converter Event Handlers
-
-        // ------ Button_Click_FX ------
-        // Event handler for all FX converter buttons (tabPage2)
-        // Routes button clicks to appropriate currency converter operations
         private async void Button_Click_FX(object sender, EventArgs e)
         {
             if (sender is not Button btn) return;
             string v = btn.Text.Trim();
 
-            // Handle convert button first (needs btn.Name check)
             if (btn.Name == "btn_fx_convert" || v.Equals("Convert", StringComparison.OrdinalIgnoreCase))
             {
                 await FxConvertAsync();
@@ -229,7 +181,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     FxClearAll();
                     break;
 
-                case "⌫" or "←" or "Back" or "⟵":
+                case "âŒ«" or "â†" or "Back" or "âŸµ":
                     BackspaceCommon(lbl_fx_display, ref fxIsEnteringAmount, FxClearEntry);
                     break;
 
@@ -248,48 +200,28 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             }
         }
 
-        #endregion
-
-
-
-        #region Private Methods
-
-        #region Common Helper Methods
-
-        // ------ WireAllButtonsToOneHandlerIterative ------
-        // Recursively finds all Button controls within a container and attaches the same event handler
-        // Uses iterative approach with a stack to avoid deep recursion
         private void WireAllButtonsToOneHandlerIterative(Control root, EventHandler handler)
         {
-            // Create a stack to traverse the control tree
             var stack = new Stack<Control>();
-            stack.Push(root);  // Start with the root control
+            stack.Push(root);
 
-            // Process controls until the stack is empty
             while (stack.Count > 0)
             {
-                // Pop the next control to process
                 Control current = stack.Pop();
 
-                // If the current control is a Button, wire up the event handler
                 if (current is Button b)
                 {
-                    b.Click -= handler;  // Remove handler first to avoid duplicates
-                    b.Click += handler;   // Add the handler
+                    b.Click -= handler;
+                    b.Click += handler;
                 }
 
-                // Push all child controls onto the stack for processing
                 foreach (Control child in current.Controls)
                     stack.Push(child);
             }
         }
 
-        // ------ AppendDecimalCommon ------
-        // Common method to append a decimal point to a display label
-        // Used by both calculator and FX converter to avoid code duplication
         private void AppendDecimalCommon(Label displayLabel, ref bool isEnteringFlag)
         {
-            // If not currently entering a value, start with "0."
             if (!isEnteringFlag)
             {
                 displayLabel.Text = "0.";
@@ -297,41 +229,31 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                 return;
             }
 
-            // Only add decimal point if one doesn't already exist
             if (!displayLabel.Text.Contains("."))
                 displayLabel.Text += ".";
         }
 
-        // ------ AppendDigitCommon ------
-        // Common method to append a digit to a display label
-        // Used by both calculator and FX converter to avoid code duplication
         private void AppendDigitCommon(Label displayLabel, string digit, ref bool isEnteringFlag)
         {
-            // If not currently entering a value or display shows "0", start a new number
             if (!isEnteringFlag || displayLabel.Text == "0")
             {
-                displayLabel.Text = digit;      // Replace display with the new digit
-                isEnteringFlag = true;           // Mark that user is now entering a value
+                displayLabel.Text = digit;
+                isEnteringFlag = true;
             }
             else
             {
-                displayLabel.Text += digit;      // Append digit to existing value
+                displayLabel.Text += digit;
             }
         }
 
-        // ------ BackspaceCommon ------
-        // Common method to remove the last character from a display label
-        // Used by both calculator and FX converter to avoid code duplication
         private void BackspaceCommon(Label displayLabel, ref bool isEnteringFlag, Action clearEntryAction)
         {
-            // If not entering a value, call the appropriate clear entry method
             if (!isEnteringFlag)
             {
                 clearEntryAction();
                 return;
             }
 
-            // If only one character left (or "-X" for negative single digit), reset to 0
             if (displayLabel.Text.Length <= 1 || (displayLabel.Text.Length == 2 && displayLabel.Text.StartsWith("-")))
             {
                 displayLabel.Text = "0";
@@ -339,10 +261,8 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                 return;
             }
 
-            // Remove the last character
             displayLabel.Text = displayLabel.Text.Substring(0, displayLabel.Text.Length - 1);
 
-            // If only "-" or empty string remains, reset to 0
             if (displayLabel.Text == "-" || displayLabel.Text.Length == 0)
             {
                 displayLabel.Text = "0";
@@ -350,296 +270,269 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             }
         }
 
-        // ------ ParseDisplayValue ------
-        // Common method to parse a numeric value from a display label
-        // Returns 0 if parsing fails
         private double ParseDisplayValue(Label displayLabel)
         {
-            // Try to parse using invariant culture (e.g., "123.45")
             if (double.TryParse(displayLabel.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double v))
                 return v;
 
-            // Try to parse using current culture as fallback (e.g., "123,45" in some locales)
             if (double.TryParse(displayLabel.Text, out v))
                 return v;
 
-            // Return 0 if both parsing attempts fail
             return 0;
         }
 
-        #endregion
-
-        #region Calculator Methods
-
-        #region Calculator Helper Methods
-
-        // ------ CurrentValue ------
-        // Retrieves the current numeric value displayed in the calculator result label
-        // Returns 0 if parsing fails
-        private double CurrentValue()
+        private static int Precedence(string op) => op switch
         {
-            // Call the common parsing method with calculator display label
-            return ParseDisplayValue(lbl_result);
+            "xÊ¸" => 3,
+            "X" or "Ã·" or "mod" => 2,
+            "+" or "-" => 1,
+            _ => 0
+        };
+
+        private static double Apply(double a, double b, string op) => op switch
+        {
+            "+" => a + b,
+            "-" => a - b,
+            "X" => a * b,
+            "Ã·" => b == 0 ? throw new DivideByZeroException() : a / b,
+            "mod" => b == 0 ? throw new DivideByZeroException() : a % b,
+            "xÊ¸" => Math.Pow(a, b),
+            _ => throw new InvalidOperationException($"Unknown operator: {op}")
+        };
+
+
+        private void CaptureRepeatEqualsMemory(List<string> working)
+        {
+            canRepeatEquals = false;
+            if (working.Count < 3) return;
+            int i = working.Count - 1;
+            if (!double.TryParse(working[i], NumberStyles.Float, CultureInfo.InvariantCulture, out double right))
+                return;
+            string op = working[i - 1];
+            bool opIsBinary = op is "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸";
+            if (!opIsBinary) return;
+            string leftTok = working[i - 2];
+            bool leftOk =
+                double.TryParse(leftTok, NumberStyles.Float, CultureInfo.InvariantCulture, out _) ||
+                leftTok == ")";
+
+            if (!leftOk) return;
+
+            lastBinaryOp = op;
+            lastBinaryRight = right;
+            canRepeatEquals = true;
         }
 
-        // ------ SetResult ------
-        // Sets the calculator display to show the given numeric value
-        // Shows error message if value is NaN or Infinity
-        private void SetResult(double v)
+        private double EvaluateTokens(List<string> tks)
         {
-            // Check if the value is invalid (Not a Number or Infinity)
-            if (double.IsNaN(v) || double.IsInfinity(v))
+            var values = new Stack<double>();
+            var ops = new Stack<string>();
+
+            void ReduceOnce()
             {
-                ShowError("Invalid input");
-                return;
+                string op = ops.Pop();
+                double b = values.Pop();
+                double a = values.Pop();
+                values.Push(Apply(a, b, op));
             }
 
-            // Convert the value to string using invariant culture for consistency
-            lbl_result.Text = v.ToString(CultureInfo.InvariantCulture);
-        }
-
-        // ------ ShowError ------
-        // Displays an error message and resets the calculator state
-        // Used when invalid operations occur (e.g., division by zero)
-        private void ShowError(string message)
-        {
-            // Clear the expression display
-            lbl_expression.Text = "";
-
-            // Show the error message in the result display
-            lbl_result.Text = message;
-
-            // Reset all calculator state variables
-            leftOperand = 0;
-            pendingOperator = "";
-            lastRightOperand = 0;
-            lastOperator = "";
-            isEnteringNumber = false;
-        }
-
-        // ------ Evaluate ------
-        // Performs a binary operation on two operands based on the given operator
-        // Returns the result or throws an exception for invalid operations (e.g., division by zero)
-        private double Evaluate(double a, double b, string op)
-        {
-            // Use switch expression to determine which operation to perform
-            return op switch
+            foreach (string tk in tks)
             {
-                "+" => a + b,                    // Addition
-                "-" => a - b,                    // Subtraction
-                "X" => a * b,                    // Multiplication
-                "÷" => b == 0 ? throw new DivideByZeroException() : a / b,  // Division (check for zero)
-                "mod" => b == 0 ? throw new DivideByZeroException() : a % b, // Modulo (check for zero)
-                "xʸ" => Math.Pow(a, b),            // Power (x^y)
-                _ => throw new InvalidOperationException($"Unknown operator: {op}")  // Throw error for unknown operators
-            };
-        }
-
-        // ------ IsInteger ------
-        // Checks if a double value is effectively an integer (within floating-point tolerance)
-        // Used to validate factorial input
-        private static bool IsInteger(double x)
-        {
-            // Compare the difference between x and its rounded value to a small epsilon
-            return Math.Abs(x - Math.Round(x)) < INTEGER_TOLERANCE;
-        }
-
-        // ------ Factorial ------
-        // Calculates the factorial of a number (n!)
-        // Throws exceptions for negative numbers, non-integers, or values too large (>170)
-        private static double Factorial(double n)
-        {
-            // Factorial is not defined for negative numbers
-            if (n < 0) throw new ArgumentOutOfRangeException(nameof(n));
-
-            // Factorial is only defined for integers
-            if (!IsInteger(n)) throw new ArgumentException("Factorial requires integer input.");
-
-            // Results larger than 170! cause overflow in double precision
-            if (n > MAX_FACTORIAL_INPUT) throw new OverflowException("Result too large.");
-
-            // Calculate factorial iteratively
-            double r = 1;
-            for (int i = 2; i <= (int)Math.Round(n); i++)
-                r *= i;  // Multiply result by each integer from 2 to n
-            return r;
-        }
-
-        #endregion
-
-        #region Calculator Button Handlers
-
-        // ------ ToggleSign ------
-        // Toggles the sign of the current number between positive and negative
-        // Adds or removes a minus sign from the display
-        private void ToggleSign()
-        {
-            // If number is negative, remove the minus sign
-            if (lbl_result.Text.StartsWith("-"))
-                lbl_result.Text = lbl_result.Text.Substring(1);
-            // If number is positive and not zero, add the minus sign
-            else if (lbl_result.Text != "0")
-                lbl_result.Text = "-" + lbl_result.Text;
-
-            // Mark that user is entering a number
-            isEnteringNumber = true;
-        }
-
-        // ------ ClearAll ------
-        // Resets the calculator to its initial state
-        // Clears all operands, operators, and display values
-        private void ClearAll()
-        {
-            // Reset the left operand (first number in operation)
-            leftOperand = 0;
-
-            // Clear any pending operator
-            pendingOperator = "";
-
-            // Clear the expression display (top label)
-            lbl_expression.Text = "";
-
-            // Reset the result display to "0"
-            lbl_result.Text = "0";
-
-            // Mark that user is not entering a number
-            isEnteringNumber = false;
-
-            // Clear the last operation memory (for equals repeat functionality)
-            lastRightOperand = 0;
-            lastOperator = "";
-        }
-
-        // ------ ClearEntry ------
-        // Clears only the current entry without affecting stored operands or operators
-        // Resets display to "0" and stops number entry mode
-        private void ClearEntry()
-        {
-            // Reset the result display to "0"
-            lbl_result.Text = "0";
-
-            // Mark that user is not entering a number
-            isEnteringNumber = false;
-        }
-
-        // ------ PressOperator ------
-        // Handles pressing an operator button (+, -, X, ÷, mod, x^y)
-        // Performs pending operation if one exists, then prepares for the next operation
-        private void PressOperator(string op)
-        {
-            // If we are waiting for the right operand (user is NOT entering a number yet)
-            // and they press "-" or "+", treat it as a sign for the next number, not an operator replacement.
-            if (!isEnteringNumber && pendingOperator != "" && (op == "-" || op == "+"))
-            {
-                // Start entering the right operand with a sign.
-                // If you want "+" to do nothing, you can ignore it.
-                if (op == "-")
+                if (double.TryParse(tk, NumberStyles.Float, CultureInfo.InvariantCulture, out double num))
                 {
-                    // Begin a negative right operand
-                    SetResult(-0.0); // or SetResult(0); then ToggleSign(); depending on your formatting
-                    isEnteringNumber = true;
+                    values.Push(num);
+                }
+                else if (tk == "(")
+                {
+                    ops.Push(tk);
+                }
+                else if (tk == ")")
+                {
+                    while (ops.Count > 0 && ops.Peek() != "(") ReduceOnce();
+                    if (ops.Count == 0) throw new InvalidOperationException("Mismatched parentheses");
+                    ops.Pop();
                 }
                 else
                 {
-                    // "+" sign: just start entering the number (optional)
-                    SetResult(0.0);
-                    isEnteringNumber = true;
-                }
-
-                // Keep pendingOperator as-is (so xʸ is not removed)
-                return;
-            }
-
-            // Get the current display value
-            double current = CurrentValue();
-
-            if (pendingOperator == "")
-            {
-                leftOperand = current;
-            }
-            else
-            {
-                if (isEnteringNumber)
-                {
-                    try
-                    {
-                        leftOperand = Evaluate(leftOperand, current, pendingOperator);
-                        SetResult(leftOperand);
-                    }
-                    catch (DivideByZeroException)
-                    {
-                        ShowError("Cannot divide by 0");
-                        return;
-                    }
-                    catch
-                    {
-                        ShowError("Invalid input");
-                        return;
-                    }
+                    while (ops.Count > 0 && ops.Peek() != "(" && Precedence(ops.Peek()) >= Precedence(tk))
+                        ReduceOnce();
+                    ops.Push(tk);
                 }
             }
 
-            pendingOperator = op;
-            lbl_expression.Text = $"{leftOperand} {pendingOperator}";
-            isEnteringNumber = false;
+            while (ops.Count > 0)
+            {
+                if (ops.Peek() == "(") throw new InvalidOperationException("Mismatched parentheses");
+                ReduceOnce();
+            }
 
-            lastRightOperand = 0;
-            lastOperator = "";
+            if (values.Count != 1) throw new InvalidOperationException("Invalid expression");
+            return values.Pop();
         }
 
-        // ------ PressEquals ------
-        // Handles pressing the equals button
-        // Completes the current operation or repeats the last operation if pressed multiple times
-        private void PressEquals()
+        private List<string> GetInnermostParenSlice(List<string> tks)
         {
-            // If no pending operator, check if we can repeat the last operation
-            if (pendingOperator == "")
-            {
-                // If there's a last operation saved, repeat it with the current value
-                if (lastOperator != "")
-                {
-                    try
-                    {
-                        double current = CurrentValue();
-                        // Perform the last operation again (e.g., "5 = = =" repeats "+5")
-                        double r2 = Evaluate(current, lastRightOperand, lastOperator);
-                        // Update expression display
-                        lbl_expression.Text = $"{current} {lastOperator} {lastRightOperand} =";
-                        SetResult(r2);  // Display the result
+            int start = tks.LastIndexOf("(");
+            if (start < 0) return new List<string>(tks);
+            return tks.Skip(start + 1).ToList();
+        }
+        private void RefreshDisplay()
+        {
+            var working = new List<string>(tokens);
 
-                        leftOperand = r2;        // Store result for potential next operation
-                        isEnteringNumber = false; // Not entering a number anymore
-                    }
-                    catch (DivideByZeroException)
-                    {
-                        ShowError("Cannot divide by 0");
-                    }
-                    catch
-                    {
-                        ShowError("Invalid input");
-                    }
-                }
-                return;
-            }
+            if (isEnteringNumber)
+                working.Add(lbl_result.Text);
 
-            // Get the right operand from the display
-            double right = CurrentValue();
+            var slice = GetInnermostParenSlice(working);
+            if (slice.Count == 0) return;
+            string last = slice[^1];
+            bool lastIsOp = last is "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸";
+            if (lastIsOp)
+                slice.RemoveAt(slice.Count - 1);
+
+            if (slice.Count == 0) return;
+            if (slice[^1] == "(") return;
 
             try
             {
-                // Perform the pending operation
-                double r = Evaluate(leftOperand, right, pendingOperator);
-                // Update expression display to show the complete calculation
-                lbl_expression.Text = $"{leftOperand} {pendingOperator} {right} =";
-                SetResult(r);  // Display the result
+                double v = EvaluateTokens(slice);
+                lbl_result.Text = FormatForDisplay(v);
+            }
+            catch
+            {
+            }
+        }
+        private void PushCurrentEntryIfNeeded()
+        {
+            if (isEnteringNumber)
+            {
+                tokens.Add(lbl_result.Text);
+                isEnteringNumber = false;
+            }
+        }
 
-                // Save this operation for potential repeat when equals is pressed again
-                lastRightOperand = right;
-                lastOperator = pendingOperator;
+        private bool IsOperator(string tk) => tk is "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸";
 
-                // Store result and clear pending operator
-                leftOperand = r;
-                pendingOperator = "";
+        private void PressLeftParen()
+        {
+            if (tokens.Count > 0)
+            {
+                string last = tokens[^1];
+                bool lastIsNumber = double.TryParse(last, NumberStyles.Float, CultureInfo.InvariantCulture, out _);
+                if (lastIsNumber || last == ")")
+                    tokens.Add("X");
+            }
+
+            tokens.Add("(");
+            lbl_expression.Text = string.Join(" ", tokens);
+            lbl_result.Text = "0";
+            isEnteringNumber = false;
+        }
+
+        private void PressRightParen()
+        {
+            PushCurrentEntryIfNeeded();
+            if (!tokens.Contains("(")) return;
+            if (tokens.Count > 0)
+            {
+                string last = tokens[^1];
+                if (last == "(" || IsOperator(last))
+                    return;
+            }
+
+            tokens.Add(")");
+            lbl_expression.Text = string.Join(" ", tokens);
+            RefreshDisplay();
+        }
+
+        private void PressOperator(string op)
+        {
+            canRepeatEquals = false;
+
+            PushCurrentEntryIfNeeded();
+
+            if (tokens.Count == 0)
+            {
+                tokens.Add(CurrentValue().ToString(CultureInfo.InvariantCulture));
+                tokens.Add(op);
+            }
+            else
+            {
+                string last = tokens[^1];
+                if (IsOperator(last))
+                {
+                    tokens[^1] = op;
+                }
+                else if (last == "(")
+                {
+                    if (op == "-" || op == "+")
+                    {
+                        lbl_result.Text = (op == "-") ? "-0" : "0";
+                        isEnteringNumber = true;
+                        return;
+                    }
+                    return;
+                }
+                else
+                {
+                    tokens.Add(op);
+                }
+            }
+
+            lbl_expression.Text = string.Join(" ", tokens);
+            RefreshDisplay();
+        }
+
+        private void PressEquals()
+        {
+            if (tokens.Count == 0 && !isEnteringNumber && canRepeatEquals && lastBinaryOp != "")
+            {
+                try
+                {
+                    double current = CurrentValue();
+                    double rRepeat = Apply(current, lastBinaryRight, lastBinaryOp);
+                    lbl_expression.Text = $"{FormatForDisplay(current)} {lastBinaryOp} {FormatForDisplay(lastBinaryRight)} =";
+                    SetResult(rRepeat);
+                    isEnteringNumber = false;
+                    return;
+                }
+                catch (DivideByZeroException)
+                {
+                    ShowError("Cannot divide by 0");
+                    return;
+                }
+                catch
+                {
+                    ShowError("Invalid input");
+                    return;
+                }
+            }
+
+            var working = new List<string>(tokens);
+
+            if (isEnteringNumber)
+                working.Add(lbl_result.Text);
+            while (working.Count > 0)
+            {
+                string last = working[^1];
+                bool lastIsOp = last is "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸";
+                if (lastIsOp || last == "(")
+                {
+                    working.RemoveAt(working.Count - 1);
+                    continue;
+                }
+                break;
+            }
+
+            if (working.Count == 0) return;
+
+            try
+            {
+                double r = EvaluateTokens(working);
+                lbl_expression.Text = string.Join(" ", working) + " =";
+                SetResult(r);
+                CaptureRepeatEqualsMemory(working);
+                tokens.Clear();
                 isEnteringNumber = false;
             }
             catch (DivideByZeroException)
@@ -652,573 +545,403 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             }
         }
 
-        // ------ Percent ------
-        // Calculates the percentage based on context
-        // If there's a pending operation, calculates percentage of left operand; otherwise divides by 100
-        private void Percent()
+        private double CurrentValue() => ParseDisplayValue(lbl_result);
+
+        private void SetResult(double v)
         {
-            // Get the current display value
-            double current = CurrentValue();
-
-            // If there's a pending operator, calculate percentage relative to left operand
-            // Example: "200 + 10%" becomes "200 + 20" (10% of 200)
-            if (pendingOperator != "")
+            if (double.IsNaN(v) || double.IsInfinity(v))
             {
-                double percentValue = leftOperand * (current / 100.0);
-                SetResult(percentValue);
-            }
-            else
-            {
-                // No pending operator: just divide by 100
-                // Example: "50%" becomes "0.5"
-                SetResult(current / 100.0);
+                ShowError("Invalid input");
+                return;
             }
 
-            // Mark that user is entering a number (can continue editing)
+            lbl_result.Text = FormatForDisplay(v);
+        }
+
+        private void ShowError(string message)
+        {
+            lbl_expression.Text = "";
+            lbl_result.Text = message;
+            leftOperand = 0;
+            pendingOperator = "";
+            lastRightOperand = 0;
+            lastOperator = "";
+
+            tokens.Clear();
+            isEnteringNumber = false;
+            lastBinaryOp = "";
+            lastBinaryRight = 0;
+            canRepeatEquals = false;
+        }
+
+        private static bool IsInteger(double x)
+        {
+            return Math.Abs(x - Math.Round(x)) < INTEGER_TOLERANCE;
+        }
+
+        private static double Factorial(double n)
+        {
+            if (n < 0) throw new ArgumentOutOfRangeException(nameof(n));
+            if (!IsInteger(n)) throw new ArgumentException("Factorial requires integer input.");
+            if (n > MAX_FACTORIAL_INPUT) throw new OverflowException("Result too large.");
+
+            double r = 1;
+            for (int i = 2; i <= (int)Math.Round(n); i++)
+                r *= i;
+            return r;
+        }
+
+        private string FormatForDisplay(double v)
+        {
+            if (Math.Abs(v) < 1e-15) v = 0;
+            string normal = v.ToString(CultureInfo.InvariantCulture);
+            if (normal.Length <= MAX_RESULT_LEN) return normal;
+            return v.ToString(SCI_FORMAT, CultureInfo.InvariantCulture);
+        }
+
+        private void ToggleSign()
+        {
+            if (lbl_result.Text.StartsWith("-"))
+                lbl_result.Text = lbl_result.Text.Substring(1);
+            else if (lbl_result.Text != "0")
+                lbl_result.Text = "-" + lbl_result.Text;
+
             isEnteringNumber = true;
         }
 
-        // ------ Reciprocal ------
-        // Calculates the reciprocal (1/x) of the current value
-        // Shows error if current value is zero (division by zero)
+        private void ClearAll()
+        {
+            leftOperand = 0;
+            pendingOperator = "";
+            lastRightOperand = 0;
+            lastOperator = "";
+            tokens.Clear();
+            lastBinaryOp = "";
+            lastBinaryRight = 0;
+            canRepeatEquals = false;
+
+            lbl_expression.Text = "";
+            lbl_result.Text = "0";
+            isEnteringNumber = false;
+        }
+
+        private void ClearEntry()
+        {
+            lbl_result.Text = "0";
+            isEnteringNumber = false;
+        }
+
+        private void Percent()
+        {
+            double current = CurrentValue();
+            SetResult(current / 100.0);
+            isEnteringNumber = true;
+        }
+
         private void Reciprocal()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Check for division by zero
             if (x == 0)
             {
                 ShowError("Cannot divide by 0");
                 return;
             }
 
-            // Calculate and display 1/x
             SetResult(1.0 / x);
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ Square ------
-        // Calculates the square (x²) of the current value
         private void Square()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Calculate and display x * x
             SetResult(x * x);
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ Sqrt ------
-        // Calculates the square root (√x) of the current value
-        // Shows error if current value is negative (no complex numbers)
         private void Sqrt()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Check if value is negative (square root of negative is complex)
             if (x < 0)
             {
                 ShowError("Invalid input");
                 return;
             }
 
-            // Calculate and display square root
             SetResult(Math.Sqrt(x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ Abs ------
-        // Calculates the absolute value (|x|) of the current value
-        // Converts negative numbers to positive, positive numbers remain unchanged
         private void Abs()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Calculate and display absolute value
             SetResult(Math.Abs(x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ InsertConstant ------
-        // Inserts a mathematical constant (π or e) into the display
-        // Replaces current value with the constant
         private void InsertConstant(double value)
         {
-            // Display the constant value
             SetResult(value);
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ Exp ------
-        // Calculates e raised to the power of x (e^x)
-        // Uses Euler's number (approximately 2.71828) as the base
         private void Exp()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Calculate and display e^x
             SetResult(Math.Exp(x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ Ln ------
-        // Calculates the natural logarithm (ln(x)) of the current value
-        // Shows error if value is zero or negative (ln only defined for positive numbers)
         private void Ln()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Check if value is non-positive (ln only defined for x > 0)
             if (x <= 0)
             {
                 ShowError("Invalid input");
                 return;
             }
 
-            // Calculate and display natural logarithm
             SetResult(Math.Log(x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ Log10 ------
-        // Calculates the base-10 logarithm (log10(x)) of the current value
-        // Shows error if value is zero or negative (log only defined for positive numbers)
         private void Log10()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Check if value is non-positive (log only defined for x > 0)
             if (x <= 0)
             {
                 ShowError("Invalid input");
                 return;
             }
 
-            // Calculate and display base-10 logarithm
             SetResult(Math.Log10(x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ TenPowerX ------
-        // Calculates 10 raised to the power of x (10^x)
-        // Inverse operation of Log10
         private void TenPowerX()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Calculate and display 10^x
             SetResult(Math.Pow(10, x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ FactorialUnary ------
-        // Calculates the factorial (n!) of the current value
-        // Shows error if value is negative, non-integer, or too large (>170)
         private void FactorialUnary()
         {
-            // Get the current display value
             double x = CurrentValue();
-
             try
             {
-                // Calculate and display factorial
                 SetResult(Factorial(x));
-
-                // Mark that user is entering a number (can continue editing)
                 isEnteringNumber = true;
             }
             catch
             {
-                // Show error for invalid factorial input
                 ShowError("Invalid input");
             }
         }
 
-        // ------ Sin ------
-        // Calculates the sine of the current value (in radians)
-        // Part of the trigonometric functions available in "2nd" mode
         private void Sin()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Calculate and display sine (input assumed to be in radians)
             SetResult(Math.Sin(x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ Cos ------
-        // Calculates the cosine of the current value (in radians)
-        // Part of the trigonometric functions available in "2nd" mode
         private void Cos()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Calculate and display cosine (input assumed to be in radians)
             SetResult(Math.Cos(x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ Tan ------
-        // Calculates the tangent of the current value (in radians)
-        // Part of the trigonometric functions available in "2nd" mode
         private void Tan()
         {
-            // Get the current display value
             double x = CurrentValue();
-
-            // Calculate and display tangent (input assumed to be in radians)
             SetResult(Math.Tan(x));
-
-            // Mark that user is entering a number (can continue editing)
             isEnteringNumber = true;
         }
 
-        // ------ SetSecondMode ------
-        // Sets the calculator to "2nd" mode or normal mode
-        // Changes button labels to show alternate functions (sin/cos/tan vs 10^x/log/ln)
         private void SetSecondMode(bool enabled)
         {
-            // Update the mode flag
             isSecondMode = enabled;
 
-            // Change the "2nd" button background color to indicate active mode
             btn_second.BackColor = enabled
-                ? Color.FromArgb(255, 205, 145)  // Orange color when active
-                : secondDefaultBackColor;         // Default gray when inactive
+                ? Color.FromArgb(255, 205, 145)
+                : secondDefaultBackColor;
 
-            // Update button labels based on mode
-            // In 2nd mode: show trig functions; in normal mode: show exponential/log functions
-            btn_power_10.Text = enabled ? "sin" : "10ˣ";
+            btn_power_10.Text = enabled ? "sin" : "10Ë£";
             btn_log10.Text = enabled ? "cos" : "log";
             btn_ln.Text = enabled ? "tan" : "ln";
         }
 
-        // ------ ToggleSecondMode ------
-        // Toggles between normal mode and "2nd" mode
-        // Called when the "2nd" button is pressed
         private void ToggleSecondMode()
         {
-            // Flip the mode state
             SetSecondMode(!isSecondMode);
         }
 
-        #endregion
+        private double FxCurrentValue() => ParseDisplayValue(lbl_fx_display);
 
-        #endregion
-
-        #region FX Converter Methods
-
-        #region FX Helper Methods
-
-        // ------ FxCurrentValue ------
-        // Retrieves the current numeric value displayed in the FX converter display label
-        // Returns 0 if parsing fails
-        private double FxCurrentValue()
-        {
-            // Call the common parsing method with FX display label
-            return ParseDisplayValue(lbl_fx_display);
-        }
-
-        // ------ FxSetDisplay ------
-        // Sets the FX converter display to show the given numeric value
-        // Shows error in status label if value is NaN or Infinity
         private void FxSetDisplay(double v)
         {
-            // Check if the value is invalid (Not a Number or Infinity)
             if (double.IsNaN(v) || double.IsInfinity(v))
             {
                 lbl_fx_status.Text = "Invalid input";
                 return;
             }
 
-            // Convert the value to string using invariant culture for consistency
-            lbl_fx_display.Text = v.ToString(CultureInfo.InvariantCulture);
+            lbl_fx_display.Text = FormatForDisplay(v);
         }
 
-        // ------ NormalizeCurrency ------
-        // Normalizes a currency code to uppercase and trims whitespace
-        // Ensures consistent currency code format for API calls and caching
         private static string NormalizeCurrency(string code)
         {
-            // Handle null input, trim whitespace, and convert to uppercase (e.g., "usd" -> "USD")
             return (code ?? "").Trim().ToUpperInvariant();
         }
 
-        #endregion
-
-        #region FX Button Handlers
-
-        // ------ FxInitCombos ------
-        // Initializes the currency combo boxes with default values
-        // Sets up USD, EUR, and LBP as available currencies
         private void FxInitCombos()
         {
-            // Check if combo boxes exist
             if (cmb_fx_from == null || cmb_fx_to == null) return;
 
-            // Populate the "FROM" currency dropdown if empty
             if (cmb_fx_from.Items.Count == 0)
             {
-                cmb_fx_from.Items.Add("USD");  // US Dollar
-                cmb_fx_from.Items.Add("EUR");  // Euro
-                cmb_fx_from.Items.Add("LBP");  // Lebanese Pound
+                cmb_fx_from.Items.Add("USD");
+                cmb_fx_from.Items.Add("EUR");
+                cmb_fx_from.Items.Add("LBP");
             }
 
-            // Populate the "TO" currency dropdown if empty
             if (cmb_fx_to.Items.Count == 0)
             {
-                cmb_fx_to.Items.Add("USD");  // US Dollar
-                cmb_fx_to.Items.Add("EUR");  // Euro
-                cmb_fx_to.Items.Add("LBP");  // Lebanese Pound
+                cmb_fx_to.Items.Add("USD");
+                cmb_fx_to.Items.Add("EUR");
+                cmb_fx_to.Items.Add("LBP");
             }
 
-            // Set combo boxes to dropdown list style (no manual text entry)
             cmb_fx_from.DropDownStyle = ComboBoxStyle.DropDownList;
             cmb_fx_to.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            // Set default selections (USD -> EUR)
-            cmb_fx_from.SelectedIndex = 0;  // USD
-            cmb_fx_to.SelectedIndex = 1;    // EUR
+            cmb_fx_from.SelectedIndex = 0;
+            cmb_fx_to.SelectedIndex = 1;
         }
 
-        // ------ FxClearAll ------
-        // Resets the FX converter to its initial state
-        // Clears display, status, and resets currency selections
         private void FxClearAll()
         {
-            // Mark that user is not entering an amount
             fxIsEnteringAmount = false;
-
-            // Reset the FX display to "0"
             lbl_fx_display.Text = "0";
-
-            // Clear the status message
             lbl_fx_status.Text = "";
 
-            // Reset currency selections to defaults (USD -> EUR)
             if (cmb_fx_from != null) cmb_fx_from.SelectedIndex = 0;
             if (cmb_fx_to != null) cmb_fx_to.SelectedIndex = 1;
         }
 
-        // ------ FxClearEntry ------
-        // Clears only the current entry without affecting other FX state
-        // Resets display to "0" and stops number entry mode
         private void FxClearEntry()
         {
-            // Reset the FX display to "0"
             lbl_fx_display.Text = "0";
-
-            // Mark that user is not entering an amount
             fxIsEnteringAmount = false;
         }
 
-        // ------ FxCopy ------
-        // Copies the current FX display value to the system clipboard
-        // Shows status message indicating success or failure
         private void FxCopy()
         {
             try
             {
-                // Copy the display text to clipboard
                 Clipboard.SetText(lbl_fx_display.Text);
-
-                // Show success message
                 lbl_fx_status.Text = "Copied";
             }
             catch
             {
-                // Show error message if copy fails
                 lbl_fx_status.Text = "Copy failed";
             }
         }
 
-        // ------ FxPaste ------
-        // Pastes a numeric value from the system clipboard into the FX display
-        // Validates the pasted text is a valid number
         private void FxPaste()
         {
             try
             {
-                // Get text from clipboard and trim whitespace
                 string t = Clipboard.GetText()?.Trim() ?? "";
-
-                // Check if clipboard is empty
                 if (t.Length == 0)
                 {
                     lbl_fx_status.Text = "Clipboard empty";
                     return;
                 }
 
-                // Try to parse the text as a number (invariant culture first, then current culture)
                 if (!double.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out double v) &&
                     !double.TryParse(t, NumberStyles.Float, CultureInfo.CurrentCulture, out v))
                 {
-                    // Show error if text is not a valid number
                     lbl_fx_status.Text = "Invalid paste";
                     return;
                 }
 
-                // Set the parsed value to the display
                 FxSetDisplay(v);
-
-                // Mark that user is now entering an amount
                 fxIsEnteringAmount = true;
-
-                // Clear the status message
                 lbl_fx_status.Text = "";
             }
             catch
             {
-                // Show error message if paste operation fails
                 lbl_fx_status.Text = "Paste failed";
             }
         }
 
-        // ------ FxConvertAsync ------
-        // Performs currency conversion by fetching exchange rate from API
-        // Validates currency selections and displays converted amount
         private async Task FxConvertAsync()
         {
-            // Get the selected FROM currency code
             string from = cmb_fx_from?.SelectedItem?.ToString() ?? "";
-
-            // Get the selected TO currency code
             string to = cmb_fx_to?.SelectedItem?.ToString() ?? "";
 
-            // Normalize currency codes (trim and uppercase)
             from = NormalizeCurrency(from);
             to = NormalizeCurrency(to);
 
-            // Validate that both currencies are selected
             if (string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
             {
                 lbl_fx_status.Text = "Select FROM and TO currencies";
                 return;
             }
 
-            // Check that FROM and TO currencies are different
             if (from == to)
             {
                 lbl_fx_status.Text = "FROM and TO cannot be the same";
                 return;
             }
 
-            // Get the amount to convert from the display
             double amount = FxCurrentValue();
-
-            // Show loading message
             lbl_fx_status.Text = "Loading rate...";
 
             try
             {
-                // Fetch the exchange rate from the API
                 double rate = await FxGetRateAsync(from, to);
-
-                // Calculate the converted amount
                 double converted = amount * rate;
 
-                // Display the converted amount
                 FxSetDisplay(converted);
-
-                // Mark that user is not entering an amount (result is displayed)
                 fxIsEnteringAmount = false;
-
-                // Show the exchange rate in the status label
                 lbl_fx_status.Text = $"{from}->{to} rate={rate.ToString(CultureInfo.InvariantCulture)}";
             }
             catch (Exception ex)
             {
-                // Show error message if conversion fails
                 lbl_fx_status.Text = "Conversion failed: " + ex.Message;
             }
         }
 
-        // ------ FxGetRateAsync ------
-        // Fetches exchange rate from API
-        // Note: Expects already normalized currency codes (uppercase, trimmed)
         private async Task<double> FxGetRateAsync(string from, string to)
         {
-            // Build the API URL for fetching the exchange rate
             string url = $"https://hexarate.paikama.co/api/rates/{from}/{to}/latest";
 
-            // Make HTTP GET request to the API
             using HttpResponseMessage resp = await fxHttp.GetAsync(url);
-
-            // Ensure the request was successful (throw exception if not)
             resp.EnsureSuccessStatusCode();
 
-            // Read the JSON response as a string
             string json = await resp.Content.ReadAsStringAsync();
-
-            // Parse the JSON document
             using JsonDocument doc = JsonDocument.Parse(json);
 
-            // Extract the "data" property from the response
             if (!doc.RootElement.TryGetProperty("data", out JsonElement dataEl))
                 throw new Exception("Missing data");
 
-            // Extract the "mid" property (exchange rate value)
             if (!dataEl.TryGetProperty("mid", out JsonElement midEl))
                 throw new Exception("Missing mid");
 
-            // Get the mid value as a double
             double mid = midEl.GetDouble();
 
-            // Some currencies have a "unit" property (e.g., 1000 LBP = X USD)
             double unit = 1;
             if (dataEl.TryGetProperty("unit", out JsonElement unitEl) && unitEl.ValueKind == JsonValueKind.Number)
                 unit = unitEl.GetDouble();
 
-            // Check if unit is valid (non-zero)
             if (unit == 0)
                 throw new Exception("Invalid unit");
 
-            // Calculate the actual rate (mid / unit)
-            double rate = mid / unit;
-
-            // Return the calculated rate
-            return rate;
+            return mid / unit;
         }
-
-        #endregion
-
-        #endregion
-
-        #endregion
-
-        #endregion
 
     }
 }

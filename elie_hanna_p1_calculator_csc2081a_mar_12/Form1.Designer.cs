@@ -31,22 +31,24 @@
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
-            btn_second = new Button();
-            btn_percent = new Button();
             btn_abs = new Button();
-            btn_exp = new Button();
+            btn_second = new Button();
             btn_mod = new Button();
+            btn_reciprocal = new Button();
+            btn_exp = new Button();
             btn_backspace = new Button();
+            btn_clear_all = new Button();
             btn_divide = new Button();
             btn_multiply = new Button();
             btn_subtract = new Button();
+            btn_pi = new Button();
+            btn_e = new Button();
             btn_add = new Button();
             btn_equals = new Button();
-            btn_clear_entry = new Button();
-            btn_factorial = new Button();
             btn_digit_9 = new Button();
             btn_digit_6 = new Button();
             btn_digit_3 = new Button();
+            btn_factorial = new Button();
             btn_decimal = new Button();
             btn_digit_0 = new Button();
             btn_digit_2 = new Button();
@@ -62,10 +64,8 @@
             btn_power_10 = new Button();
             btn_log10 = new Button();
             btn_ln = new Button();
-            btn_e = new Button();
-            btn_reciprocal = new Button();
-            btn_pi = new Button();
-            btn_clear_all = new Button();
+            button3 = new Button();
+            button1 = new Button();
             lbl_expression = new Label();
             lbl_result = new Label();
             tabPage2 = new TabPage();
@@ -129,22 +129,24 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            tableLayoutPanel1.Controls.Add(btn_second, 1, 0);
-            tableLayoutPanel1.Controls.Add(btn_percent, 0, 0);
-            tableLayoutPanel1.Controls.Add(btn_abs, 2, 2);
-            tableLayoutPanel1.Controls.Add(btn_exp, 3, 1);
+            tableLayoutPanel1.Controls.Add(btn_abs, 2, 1);
+            tableLayoutPanel1.Controls.Add(btn_second, 0, 0);
             tableLayoutPanel1.Controls.Add(btn_mod, 4, 1);
+            tableLayoutPanel1.Controls.Add(btn_reciprocal, 1, 1);
+            tableLayoutPanel1.Controls.Add(btn_exp, 3, 1);
             tableLayoutPanel1.Controls.Add(btn_backspace, 4, 0);
+            tableLayoutPanel1.Controls.Add(btn_clear_all, 3, 0);
             tableLayoutPanel1.Controls.Add(btn_divide, 4, 2);
             tableLayoutPanel1.Controls.Add(btn_multiply, 4, 3);
             tableLayoutPanel1.Controls.Add(btn_subtract, 4, 4);
+            tableLayoutPanel1.Controls.Add(btn_pi, 1, 0);
+            tableLayoutPanel1.Controls.Add(btn_e, 2, 0);
             tableLayoutPanel1.Controls.Add(btn_add, 4, 5);
             tableLayoutPanel1.Controls.Add(btn_equals, 4, 6);
-            tableLayoutPanel1.Controls.Add(btn_clear_entry, 3, 0);
-            tableLayoutPanel1.Controls.Add(btn_factorial, 3, 2);
             tableLayoutPanel1.Controls.Add(btn_digit_9, 3, 3);
             tableLayoutPanel1.Controls.Add(btn_digit_6, 3, 4);
             tableLayoutPanel1.Controls.Add(btn_digit_3, 3, 5);
+            tableLayoutPanel1.Controls.Add(btn_factorial, 3, 2);
             tableLayoutPanel1.Controls.Add(btn_decimal, 3, 6);
             tableLayoutPanel1.Controls.Add(btn_digit_0, 2, 6);
             tableLayoutPanel1.Controls.Add(btn_digit_2, 2, 5);
@@ -160,10 +162,8 @@
             tableLayoutPanel1.Controls.Add(btn_power_10, 0, 4);
             tableLayoutPanel1.Controls.Add(btn_log10, 0, 5);
             tableLayoutPanel1.Controls.Add(btn_ln, 0, 6);
-            tableLayoutPanel1.Controls.Add(btn_e, 2, 1);
-            tableLayoutPanel1.Controls.Add(btn_reciprocal, 1, 2);
-            tableLayoutPanel1.Controls.Add(btn_pi, 1, 1);
-            tableLayoutPanel1.Controls.Add(btn_clear_all, 2, 0);
+            tableLayoutPanel1.Controls.Add(button3, 2, 2);
+            tableLayoutPanel1.Controls.Add(button1, 1, 2);
             tableLayoutPanel1.Dock = DockStyle.Bottom;
             tableLayoutPanel1.Location = new Point(3, 189);
             tableLayoutPanel1.Margin = new Padding(3, 2, 3, 2);
@@ -179,38 +179,12 @@
             tableLayoutPanel1.Size = new Size(396, 308);
             tableLayoutPanel1.TabIndex = 10;
             // 
-            // btn_second
-            // 
-            btn_second.BackColor = SystemColors.ActiveBorder;
-            btn_second.Dock = DockStyle.Fill;
-            btn_second.Font = new Font("Segoe UI", 14.25F);
-            btn_second.Location = new Point(82, 2);
-            btn_second.Margin = new Padding(3, 2, 3, 2);
-            btn_second.Name = "btn_second";
-            btn_second.Size = new Size(73, 40);
-            btn_second.TabIndex = 40;
-            btn_second.Text = "2nd";
-            btn_second.UseVisualStyleBackColor = false;
-            // 
-            // btn_percent
-            // 
-            btn_percent.BackColor = SystemColors.ButtonHighlight;
-            btn_percent.Dock = DockStyle.Fill;
-            btn_percent.Font = new Font("Segoe UI", 14.25F);
-            btn_percent.Location = new Point(3, 2);
-            btn_percent.Margin = new Padding(3, 2, 3, 2);
-            btn_percent.Name = "btn_percent";
-            btn_percent.Size = new Size(73, 40);
-            btn_percent.TabIndex = 24;
-            btn_percent.Text = "%";
-            btn_percent.UseVisualStyleBackColor = false;
-            // 
             // btn_abs
             // 
             btn_abs.BackColor = SystemColors.ButtonHighlight;
             btn_abs.Dock = DockStyle.Fill;
             btn_abs.Font = new Font("Segoe UI", 14.25F);
-            btn_abs.Location = new Point(161, 90);
+            btn_abs.Location = new Point(161, 46);
             btn_abs.Margin = new Padding(3, 2, 3, 2);
             btn_abs.Name = "btn_abs";
             btn_abs.Size = new Size(73, 40);
@@ -218,18 +192,18 @@
             btn_abs.Text = "|x|";
             btn_abs.UseVisualStyleBackColor = false;
             // 
-            // btn_exp
+            // btn_second
             // 
-            btn_exp.BackColor = SystemColors.ButtonHighlight;
-            btn_exp.Dock = DockStyle.Fill;
-            btn_exp.Font = new Font("Segoe UI", 14.25F);
-            btn_exp.Location = new Point(240, 46);
-            btn_exp.Margin = new Padding(3, 2, 3, 2);
-            btn_exp.Name = "btn_exp";
-            btn_exp.Size = new Size(73, 40);
-            btn_exp.TabIndex = 23;
-            btn_exp.Text = "exp";
-            btn_exp.UseVisualStyleBackColor = false;
+            btn_second.BackColor = SystemColors.ActiveBorder;
+            btn_second.Dock = DockStyle.Fill;
+            btn_second.Font = new Font("Segoe UI", 14.25F);
+            btn_second.Location = new Point(3, 2);
+            btn_second.Margin = new Padding(3, 2, 3, 2);
+            btn_second.Name = "btn_second";
+            btn_second.Size = new Size(73, 40);
+            btn_second.TabIndex = 40;
+            btn_second.Text = "2nd";
+            btn_second.UseVisualStyleBackColor = false;
             // 
             // btn_mod
             // 
@@ -244,6 +218,32 @@
             btn_mod.Text = "mod";
             btn_mod.UseVisualStyleBackColor = false;
             // 
+            // btn_reciprocal
+            // 
+            btn_reciprocal.BackColor = SystemColors.ButtonHighlight;
+            btn_reciprocal.Dock = DockStyle.Fill;
+            btn_reciprocal.Font = new Font("Lucida Calligraphy", 14.25F);
+            btn_reciprocal.Location = new Point(82, 46);
+            btn_reciprocal.Margin = new Padding(3, 2, 3, 2);
+            btn_reciprocal.Name = "btn_reciprocal";
+            btn_reciprocal.Size = new Size(73, 40);
+            btn_reciprocal.TabIndex = 6;
+            btn_reciprocal.Text = "1/x";
+            btn_reciprocal.UseVisualStyleBackColor = false;
+            // 
+            // btn_exp
+            // 
+            btn_exp.BackColor = SystemColors.ButtonHighlight;
+            btn_exp.Dock = DockStyle.Fill;
+            btn_exp.Font = new Font("Segoe UI", 14.25F);
+            btn_exp.Location = new Point(240, 46);
+            btn_exp.Margin = new Padding(3, 2, 3, 2);
+            btn_exp.Name = "btn_exp";
+            btn_exp.Size = new Size(73, 40);
+            btn_exp.TabIndex = 23;
+            btn_exp.Text = "exp";
+            btn_exp.UseVisualStyleBackColor = false;
+            // 
             // btn_backspace
             // 
             btn_backspace.BackColor = SystemColors.ButtonHighlight;
@@ -256,6 +256,19 @@
             btn_backspace.TabIndex = 4;
             btn_backspace.Text = "⌫";
             btn_backspace.UseVisualStyleBackColor = false;
+            // 
+            // btn_clear_all
+            // 
+            btn_clear_all.BackColor = SystemColors.ButtonHighlight;
+            btn_clear_all.Dock = DockStyle.Fill;
+            btn_clear_all.Font = new Font("Segoe UI", 14.25F);
+            btn_clear_all.Location = new Point(240, 2);
+            btn_clear_all.Margin = new Padding(3, 2, 3, 2);
+            btn_clear_all.Name = "btn_clear_all";
+            btn_clear_all.Size = new Size(73, 40);
+            btn_clear_all.TabIndex = 39;
+            btn_clear_all.Text = "C";
+            btn_clear_all.UseVisualStyleBackColor = false;
             // 
             // btn_divide
             // 
@@ -296,6 +309,32 @@
             btn_subtract.Text = "-";
             btn_subtract.UseVisualStyleBackColor = false;
             // 
+            // btn_pi
+            // 
+            btn_pi.BackColor = SystemColors.ButtonHighlight;
+            btn_pi.Dock = DockStyle.Fill;
+            btn_pi.Font = new Font("Segoe UI", 14.25F);
+            btn_pi.Location = new Point(82, 2);
+            btn_pi.Margin = new Padding(3, 2, 3, 2);
+            btn_pi.Name = "btn_pi";
+            btn_pi.Size = new Size(73, 40);
+            btn_pi.TabIndex = 24;
+            btn_pi.Text = "π";
+            btn_pi.UseVisualStyleBackColor = false;
+            // 
+            // btn_e
+            // 
+            btn_e.BackColor = SystemColors.ButtonHighlight;
+            btn_e.Dock = DockStyle.Fill;
+            btn_e.Font = new Font("Segoe UI", 14.25F);
+            btn_e.Location = new Point(161, 2);
+            btn_e.Margin = new Padding(3, 2, 3, 2);
+            btn_e.Name = "btn_e";
+            btn_e.Size = new Size(73, 40);
+            btn_e.TabIndex = 38;
+            btn_e.Text = "e";
+            btn_e.UseVisualStyleBackColor = false;
+            // 
             // btn_add
             // 
             btn_add.BackColor = SystemColors.ButtonHighlight;
@@ -323,32 +362,6 @@
             btn_equals.TabIndex = 29;
             btn_equals.Text = "=";
             btn_equals.UseVisualStyleBackColor = false;
-            // 
-            // btn_clear_entry
-            // 
-            btn_clear_entry.BackColor = SystemColors.ButtonHighlight;
-            btn_clear_entry.Dock = DockStyle.Fill;
-            btn_clear_entry.Font = new Font("Segoe UI", 14.25F);
-            btn_clear_entry.Location = new Point(240, 2);
-            btn_clear_entry.Margin = new Padding(3, 2, 3, 2);
-            btn_clear_entry.Name = "btn_clear_entry";
-            btn_clear_entry.Size = new Size(73, 40);
-            btn_clear_entry.TabIndex = 3;
-            btn_clear_entry.Text = "CE";
-            btn_clear_entry.UseVisualStyleBackColor = false;
-            // 
-            // btn_factorial
-            // 
-            btn_factorial.BackColor = SystemColors.ButtonHighlight;
-            btn_factorial.Dock = DockStyle.Fill;
-            btn_factorial.Font = new Font("Segoe UI", 14.25F);
-            btn_factorial.Location = new Point(240, 90);
-            btn_factorial.Margin = new Padding(3, 2, 3, 2);
-            btn_factorial.Name = "btn_factorial";
-            btn_factorial.Size = new Size(73, 40);
-            btn_factorial.TabIndex = 30;
-            btn_factorial.Text = "n!";
-            btn_factorial.UseVisualStyleBackColor = false;
             // 
             // btn_digit_9
             // 
@@ -388,6 +401,19 @@
             btn_digit_3.TabIndex = 23;
             btn_digit_3.Text = "3";
             btn_digit_3.UseVisualStyleBackColor = false;
+            // 
+            // btn_factorial
+            // 
+            btn_factorial.BackColor = SystemColors.ButtonHighlight;
+            btn_factorial.Dock = DockStyle.Fill;
+            btn_factorial.Font = new Font("Segoe UI", 14.25F);
+            btn_factorial.Location = new Point(240, 90);
+            btn_factorial.Margin = new Padding(3, 2, 3, 2);
+            btn_factorial.Name = "btn_factorial";
+            btn_factorial.Size = new Size(73, 40);
+            btn_factorial.TabIndex = 30;
+            btn_factorial.Text = "n!";
+            btn_factorial.UseVisualStyleBackColor = false;
             // 
             // btn_decimal
             // 
@@ -584,57 +610,31 @@
             btn_ln.Text = "ln";
             btn_ln.UseVisualStyleBackColor = false;
             // 
-            // btn_e
+            // button3
             // 
-            btn_e.BackColor = SystemColors.ButtonHighlight;
-            btn_e.Dock = DockStyle.Fill;
-            btn_e.Font = new Font("Segoe UI", 14.25F);
-            btn_e.Location = new Point(161, 46);
-            btn_e.Margin = new Padding(3, 2, 3, 2);
-            btn_e.Name = "btn_e";
-            btn_e.Size = new Size(73, 40);
-            btn_e.TabIndex = 38;
-            btn_e.Text = "e";
-            btn_e.UseVisualStyleBackColor = false;
+            button3.BackColor = SystemColors.ButtonHighlight;
+            button3.Dock = DockStyle.Fill;
+            button3.Font = new Font("Segoe UI", 14.25F);
+            button3.Location = new Point(161, 90);
+            button3.Margin = new Padding(3, 2, 3, 2);
+            button3.Name = "button3";
+            button3.Size = new Size(73, 40);
+            button3.TabIndex = 39;
+            button3.Text = ")";
+            button3.UseVisualStyleBackColor = false;
             // 
-            // btn_reciprocal
+            // button1
             // 
-            btn_reciprocal.BackColor = SystemColors.ButtonHighlight;
-            btn_reciprocal.Dock = DockStyle.Fill;
-            btn_reciprocal.Font = new Font("Lucida Calligraphy", 14.25F);
-            btn_reciprocal.Location = new Point(82, 90);
-            btn_reciprocal.Margin = new Padding(3, 2, 3, 2);
-            btn_reciprocal.Name = "btn_reciprocal";
-            btn_reciprocal.Size = new Size(73, 40);
-            btn_reciprocal.TabIndex = 6;
-            btn_reciprocal.Text = "1/x";
-            btn_reciprocal.UseVisualStyleBackColor = false;
-            // 
-            // btn_pi
-            // 
-            btn_pi.BackColor = SystemColors.ButtonHighlight;
-            btn_pi.Dock = DockStyle.Fill;
-            btn_pi.Font = new Font("Segoe UI", 14.25F);
-            btn_pi.Location = new Point(82, 46);
-            btn_pi.Margin = new Padding(3, 2, 3, 2);
-            btn_pi.Name = "btn_pi";
-            btn_pi.Size = new Size(73, 40);
-            btn_pi.TabIndex = 24;
-            btn_pi.Text = "π";
-            btn_pi.UseVisualStyleBackColor = false;
-            // 
-            // btn_clear_all
-            // 
-            btn_clear_all.BackColor = SystemColors.ButtonHighlight;
-            btn_clear_all.Dock = DockStyle.Fill;
-            btn_clear_all.Font = new Font("Segoe UI", 14.25F);
-            btn_clear_all.Location = new Point(161, 2);
-            btn_clear_all.Margin = new Padding(3, 2, 3, 2);
-            btn_clear_all.Name = "btn_clear_all";
-            btn_clear_all.Size = new Size(73, 40);
-            btn_clear_all.TabIndex = 39;
-            btn_clear_all.Text = "C";
-            btn_clear_all.UseVisualStyleBackColor = false;
+            button1.BackColor = SystemColors.ButtonHighlight;
+            button1.Dock = DockStyle.Fill;
+            button1.Font = new Font("Segoe UI", 14.25F);
+            button1.Location = new Point(82, 90);
+            button1.Margin = new Padding(3, 2, 3, 2);
+            button1.Name = "button1";
+            button1.Size = new Size(73, 40);
+            button1.TabIndex = 38;
+            button1.Text = "(";
+            button1.UseVisualStyleBackColor = false;
             // 
             // lbl_expression
             // 
@@ -994,7 +994,6 @@
         private TableLayoutPanel tableLayoutPanel1;
         private Button btn_equals;
         private Button btn_decimal;
-        private Button btn_clear_entry;
         private Button btn_digit_0;
         private Button btn_plus_minus;
         private Button btn_backspace;
@@ -1033,7 +1032,6 @@
         private Button btn_fx_digit_7;
         private Button btn_fx_backspace;
         private Button btn_fx_clear_all;
-        private Button btn_percent;
         private Button btn_exp;
         private Button btn_mod;
         private Button btn_factorial;
@@ -1051,5 +1049,7 @@
         private Label lbl_fx_status;
         private ComboBox cmb_fx_from;
         private ComboBox cmb_fx_to;
+        private Button button3;
+        private Button button1;
     }
 }
