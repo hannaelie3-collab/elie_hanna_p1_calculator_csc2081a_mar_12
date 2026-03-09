@@ -665,10 +665,10 @@
             tabPage2.Controls.Add(lbl_fx_status);
             tabPage2.Controls.Add(lbl_fx_display);
             tabPage2.Controls.Add(tableLayoutPanel2);
-            tabPage2.Location = new Point(4, 34);
+            tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(402, 500);
+            tabPage2.Size = new Size(402, 505);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -722,7 +722,7 @@
             tableLayoutPanel2.Controls.Add(btn_fx_digit_3, 2, 4);
             tableLayoutPanel2.Controls.Add(btn_fx_clear_all, 2, 5);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
-            tableLayoutPanel2.Location = new Point(3, 175);
+            tableLayoutPanel2.Location = new Point(3, 180);
             tableLayoutPanel2.Margin = new Padding(3, 2, 3, 2);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 6;
@@ -989,8 +989,6 @@
         }
 
         #endregion
-        //private ContextMenuStrip contextMenuStrip1;
-        //private ContextMenuStrip contextMenuStrip2;
         private TabControl tabControl1;
         private TabPage tabPage1;
         private TableLayoutPanel tableLayoutPanel1;
@@ -1053,6 +1051,5 @@
         private Label lbl_fx_status;
         private ComboBox cmb_fx_from;
         private ComboBox cmb_fx_to;
-        //private ToolTip toolTip1;
     }
 }
