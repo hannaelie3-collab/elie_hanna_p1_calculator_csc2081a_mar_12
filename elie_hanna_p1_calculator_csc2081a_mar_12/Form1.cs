@@ -1,36 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace elie_hanna_p1_calculator_csc2081a_mar_12
 {
     public partial class Form1 : Form
     {
-        private readonly List<string> tokens = new();   // e.g. ["8", "+", "(", "2", "+", "5", ")"]
+        // =========================
+        // Initial variables / fields
+        // =========================
+
+        private const int MAX_TOKENS = 256;
+        private readonly string[] tokens = new string[MAX_TOKENS];
+        private int tokenCount = 0;
+
         private string lastBinaryOp = "";
         private double lastBinaryRight = 0;
         private bool canRepeatEquals = false;
         private bool isEnteringNumber = false;
 
-        private double leftOperand = 0;
-        private string pendingOperator = "";
-        private double lastRightOperand = 0;
-        private string lastOperator = "";
-
         private bool isSecondMode = false;
         private Color secondDefaultBackColor = SystemColors.ActiveBorder;
         private bool fxIsEnteringAmount = false;
-        private static readonly HttpClient fxHttp = new HttpClient();
+
         private const int MAX_RESULT_LEN = 14;
         private const string SCI_FORMAT = "0.###E+0";
         private const double INTEGER_TOLERANCE = 1e-12;
         private const int MAX_FACTORIAL_INPUT = 170;
+
+        // FX hard-coded rates relative to 1 USD
+        private const double EUR_PER_USD = 0.92;       // 1 USD ≈ 0.92 EUR (example)
+        private const double LBP_PER_USD = 89500.0;    // 1 USD = 89,500 LBP
 
         public Form1()
         {
@@ -46,9 +47,153 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             FxClearAll();
         }
 
+        // =========================
+        // Common helpers
+        // =========================
+
+        private void WireAllButtonsToOneHandlerIterative(Control root, EventHandler handler)
+        {
+            // Handle this control
+            Button b = root as Button;
+            if (b != null)
+            {
+                b.Click -= handler;
+                b.Click += handler;
+            }
+
+            // Recurse into children
+            for (int i = 0; i < root.Controls.Count; i++)
+            {
+                WireAllButtonsToOneHandlerIterative(root.Controls[i], handler);
+            }
+        }
+
+        private void AppendDecimalCommon(Label displayLabel, ref bool isEnteringFlag)
+        {
+            if (!isEnteringFlag)
+            {
+                displayLabel.Text = "0.";
+                isEnteringFlag = true;
+                return;
+            }
+
+            if (displayLabel.Text.IndexOf('.') < 0)
+                displayLabel.Text += ".";
+        }
+
+        private void AppendDigitCommon(Label displayLabel, string digit, ref bool isEnteringFlag)
+        {
+            if (!isEnteringFlag || displayLabel.Text == "0")
+            {
+                displayLabel.Text = digit;
+                isEnteringFlag = true;
+            }
+            else
+            {
+                displayLabel.Text += digit;
+            }
+        }
+
+        private void BackspaceCommon(Label displayLabel, ref bool isEnteringFlag, Action clearEntryAction)
+        {
+            if (!isEnteringFlag)
+            {
+                clearEntryAction();
+                return;
+            }
+
+            if (displayLabel.Text.Length <= 1 ||
+                (displayLabel.Text.Length == 2 && displayLabel.Text.StartsWith("-", StringComparison.Ordinal)))
+            {
+                displayLabel.Text = "0";
+                isEnteringFlag = false;
+                return;
+            }
+
+            displayLabel.Text = displayLabel.Text.Substring(0, displayLabel.Text.Length - 1);
+
+            if (displayLabel.Text == "-" || displayLabel.Text.Length == 0)
+            {
+                displayLabel.Text = "0";
+                isEnteringFlag = false;
+            }
+        }
+
+        private double ParseDisplayValue(Label displayLabel)
+        {
+            double v;
+            if (double.TryParse(displayLabel.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out v))
+                return v;
+
+            return 0;
+        }
+
+        // =========================
+        // Token array helpers
+        // =========================
+
+        private void TokensClear()
+        {
+            tokenCount = 0;
+        }
+
+        private void TokensAdd(string value)
+        {
+            if (tokenCount < MAX_TOKENS)
+            {
+                tokens[tokenCount] = value;
+                tokenCount++;
+            }
+        }
+
+        private bool TokensContains(string value)
+        {
+            for (int i = 0; i < tokenCount; i++)
+            {
+                if (tokens[i] == value) return true;
+            }
+            return false;
+        }
+
+        private string TokensLastOrDefault()
+        {
+            if (tokenCount == 0) return null;
+            return tokens[tokenCount - 1];
+        }
+
+        private int CopyTokensTo(string[] destination)
+        {
+            int n = tokenCount;
+            for (int i = 0; i < n; i++)
+                destination[i] = tokens[i];
+            return n;
+        }
+
+        private string BuildExpressionString()
+        {
+            return BuildExpressionStringFromArray(tokens, tokenCount);
+        }
+
+        private string BuildExpressionStringFromArray(string[] arr, int count)
+        {
+            if (count == 0) return "";
+
+            string result = arr[0];
+            for (int i = 1; i < count; i++)
+            {
+                result += " " + arr[i];
+            }
+            return result;
+        }
+
+        // =========================
+        // Calculator: button click
+        // =========================
+
         private void Button_Click(object sender, EventArgs e)
         {
-            if (sender is not Button btn) return;
+            Button btn = sender as Button;
+            if (btn == null) return;
             string v = btn.Text.Trim();
 
             switch (v)
@@ -81,7 +226,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     ClearEntry();
                     break;
 
-                case "âŒ«":
+                case "⌫":
                     BackspaceCommon(lbl_result, ref isEnteringNumber, ClearEntry);
                     break;
 
@@ -93,11 +238,11 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     Reciprocal();
                     break;
 
-                case "xÂ²":
+                case "x²":
                     Square();
                     break;
 
-                case "Â²âˆšx":
+                case "²√x":
                     Sqrt();
                     break;
 
@@ -105,7 +250,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     Abs();
                     break;
 
-                case "Ï€":
+                case "π":
                     InsertConstant(Math.PI);
                     break;
 
@@ -125,7 +270,8 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     Log10();
                     break;
 
-                case "10Ë£" or "10^x":
+                case "10ˣ":
+                case "10^x":
                     TenPowerX();
                     break;
 
@@ -145,7 +291,12 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     FactorialUnary();
                     break;
 
-                case "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸":
+                case "+":
+                case "-":
+                case "X":
+                case "÷":
+                case "mod":
+                case "xʸ":
                     PressOperator(v);
                     break;
 
@@ -160,160 +311,56 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             }
         }
 
-        private async void Button_Click_FX(object sender, EventArgs e)
+        // =========================
+        // Calculator core logic
+        // =========================
+
+        private static int Precedence(string op)
         {
-            if (sender is not Button btn) return;
-            string v = btn.Text.Trim();
-
-            if (btn.Name == "btn_fx_convert" || v.Equals("Convert", StringComparison.OrdinalIgnoreCase))
-            {
-                await FxConvertAsync();
-                return;
-            }
-
-            switch (v)
-            {
-                case ".":
-                    AppendDecimalCommon(lbl_fx_display, ref fxIsEnteringAmount);
-                    break;
-
-                case "C":
-                    FxClearAll();
-                    break;
-
-                case "âŒ«" or "â†" or "Back" or "âŸµ":
-                    BackspaceCommon(lbl_fx_display, ref fxIsEnteringAmount, FxClearEntry);
-                    break;
-
-                case var _ when v.Equals("Copy", StringComparison.OrdinalIgnoreCase):
-                    FxCopy();
-                    break;
-
-                case var _ when v.Equals("Paste", StringComparison.OrdinalIgnoreCase):
-                    FxPaste();
-                    break;
-
-                default:
-                    if (v.Length == 1 && char.IsDigit(v[0]))
-                        AppendDigitCommon(lbl_fx_display, v, ref fxIsEnteringAmount);
-                    break;
-            }
-        }
-
-        private void WireAllButtonsToOneHandlerIterative(Control root, EventHandler handler)
-        {
-            var stack = new Stack<Control>();
-            stack.Push(root);
-
-            while (stack.Count > 0)
-            {
-                Control current = stack.Pop();
-
-                if (current is Button b)
-                {
-                    b.Click -= handler;
-                    b.Click += handler;
-                }
-
-                foreach (Control child in current.Controls)
-                    stack.Push(child);
-            }
-        }
-
-        private void AppendDecimalCommon(Label displayLabel, ref bool isEnteringFlag)
-        {
-            if (!isEnteringFlag)
-            {
-                displayLabel.Text = "0.";
-                isEnteringFlag = true;
-                return;
-            }
-
-            if (!displayLabel.Text.Contains("."))
-                displayLabel.Text += ".";
-        }
-
-        private void AppendDigitCommon(Label displayLabel, string digit, ref bool isEnteringFlag)
-        {
-            if (!isEnteringFlag || displayLabel.Text == "0")
-            {
-                displayLabel.Text = digit;
-                isEnteringFlag = true;
-            }
-            else
-            {
-                displayLabel.Text += digit;
-            }
-        }
-
-        private void BackspaceCommon(Label displayLabel, ref bool isEnteringFlag, Action clearEntryAction)
-        {
-            if (!isEnteringFlag)
-            {
-                clearEntryAction();
-                return;
-            }
-
-            if (displayLabel.Text.Length <= 1 || (displayLabel.Text.Length == 2 && displayLabel.Text.StartsWith("-")))
-            {
-                displayLabel.Text = "0";
-                isEnteringFlag = false;
-                return;
-            }
-
-            displayLabel.Text = displayLabel.Text.Substring(0, displayLabel.Text.Length - 1);
-
-            if (displayLabel.Text == "-" || displayLabel.Text.Length == 0)
-            {
-                displayLabel.Text = "0";
-                isEnteringFlag = false;
-            }
-        }
-
-        private double ParseDisplayValue(Label displayLabel)
-        {
-            if (double.TryParse(displayLabel.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double v))
-                return v;
-
-            if (double.TryParse(displayLabel.Text, out v))
-                return v;
-
+            if (op == "xʸ") return 3;
+            if (op == "X" || op == "÷" || op == "mod") return 2;
+            if (op == "+" || op == "-") return 1;
             return 0;
         }
 
-        private static int Precedence(string op) => op switch
+        private static double Apply(double a, double b, string op)
         {
-            "xÊ¸" => 3,
-            "X" or "Ã·" or "mod" => 2,
-            "+" or "-" => 1,
-            _ => 0
-        };
+            if (op == "+") return a + b;
+            if (op == "-") return a - b;
+            if (op == "X") return a * b;
+            if (op == "÷")
+            {
+                if (b == 0) return double.NaN;
+                return a / b;
+            }
+            if (op == "mod")
+            {
+                if (b == 0) return double.NaN;
+                return a % b;
+            }
+            if (op == "xʸ") return Math.Pow(a, b);
+            return double.NaN;
+        }
 
-        private static double Apply(double a, double b, string op) => op switch
-        {
-            "+" => a + b,
-            "-" => a - b,
-            "X" => a * b,
-            "Ã·" => b == 0 ? throw new DivideByZeroException() : a / b,
-            "mod" => b == 0 ? throw new DivideByZeroException() : a % b,
-            "xÊ¸" => Math.Pow(a, b),
-            _ => throw new InvalidOperationException($"Unknown operator: {op}")
-        };
-
-
-        private void CaptureRepeatEqualsMemory(List<string> working)
+        private void CaptureRepeatEqualsMemory(string[] working, int workingCount)
         {
             canRepeatEquals = false;
-            if (working.Count < 3) return;
-            int i = working.Count - 1;
-            if (!double.TryParse(working[i], NumberStyles.Float, CultureInfo.InvariantCulture, out double right))
+            if (workingCount < 3) return;
+
+            int i = workingCount - 1;
+            double right;
+            if (!double.TryParse(working[i], NumberStyles.Float, CultureInfo.InvariantCulture, out right))
                 return;
+
             string op = working[i - 1];
-            bool opIsBinary = op is "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸";
+            bool opIsBinary =
+                op == "+" || op == "-" || op == "X" || op == "÷" || op == "mod" || op == "xʸ";
             if (!opIsBinary) return;
+
             string leftTok = working[i - 2];
+            double dummy;
             bool leftOk =
-                double.TryParse(leftTok, NumberStyles.Float, CultureInfo.InvariantCulture, out _) ||
+                double.TryParse(leftTok, NumberStyles.Float, CultureInfo.InvariantCulture, out dummy) ||
                 leftTok == ")";
 
             if (!leftOk) return;
@@ -323,108 +370,180 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             canRepeatEquals = true;
         }
 
-        private double EvaluateTokens(List<string> tks)
+        private double EvaluateTokens(string[] tks, int count)
         {
-            var values = new Stack<double>();
-            var ops = new Stack<string>();
+            double[] valStack = new double[MAX_TOKENS];
+            int valTop = 0;
 
-            void ReduceOnce()
-            {
-                string op = ops.Pop();
-                double b = values.Pop();
-                double a = values.Pop();
-                values.Push(Apply(a, b, op));
-            }
+            string[] opStack = new string[MAX_TOKENS];
+            int opTop = 0;
 
-            foreach (string tk in tks)
+            for (int i = 0; i < count; i++)
             {
-                if (double.TryParse(tk, NumberStyles.Float, CultureInfo.InvariantCulture, out double num))
+                string tk = tks[i];
+
+                double num;
+                if (double.TryParse(tk, NumberStyles.Float, CultureInfo.InvariantCulture, out num))
                 {
-                    values.Push(num);
+                    if (valTop < MAX_TOKENS)
+                    {
+                        valStack[valTop] = num;
+                        valTop++;
+                    }
                 }
                 else if (tk == "(")
                 {
-                    ops.Push(tk);
+                    if (opTop < MAX_TOKENS)
+                    {
+                        opStack[opTop] = tk;
+                        opTop++;
+                    }
                 }
                 else if (tk == ")")
                 {
-                    while (ops.Count > 0 && ops.Peek() != "(") ReduceOnce();
-                    if (ops.Count == 0) throw new InvalidOperationException("Mismatched parentheses");
-                    ops.Pop();
+                    while (opTop > 0 && opStack[opTop - 1] != "(")
+                    {
+                        if (valTop < 2) return double.NaN;
+                        string op = opStack[--opTop];
+                        double b = valStack[--valTop];
+                        double a = valStack[--valTop];
+                        double res = Apply(a, b, op);
+                        if (double.IsNaN(res) || double.IsInfinity(res)) return double.NaN;
+                        valStack[valTop] = res;
+                        valTop++;
+                    }
+                    if (opTop == 0) return double.NaN;
+                    opTop--; // pop "("
                 }
                 else
                 {
-                    while (ops.Count > 0 && ops.Peek() != "(" && Precedence(ops.Peek()) >= Precedence(tk))
-                        ReduceOnce();
-                    ops.Push(tk);
+                    while (opTop > 0 &&
+                           opStack[opTop - 1] != "(" &&
+                           Precedence(opStack[opTop - 1]) >= Precedence(tk))
+                    {
+                        if (valTop < 2) return double.NaN;
+                        string op = opStack[--opTop];
+                        double b = valStack[--valTop];
+                        double a = valStack[--valTop];
+                        double res = Apply(a, b, op);
+                        if (double.IsNaN(res) || double.IsInfinity(res)) return double.NaN;
+                        valStack[valTop] = res;
+                        valTop++;
+                    }
+
+                    if (opTop < MAX_TOKENS)
+                    {
+                        opStack[opTop] = tk;
+                        opTop++;
+                    }
                 }
             }
 
-            while (ops.Count > 0)
+            while (opTop > 0)
             {
-                if (ops.Peek() == "(") throw new InvalidOperationException("Mismatched parentheses");
-                ReduceOnce();
+                if (opStack[opTop - 1] == "(") return double.NaN;
+                if (valTop < 2) return double.NaN;
+                string op = opStack[--opTop];
+                double b = valStack[--valTop];
+                double a = valStack[--valTop];
+                double res = Apply(a, b, op);
+                if (double.IsNaN(res) || double.IsInfinity(res)) return double.NaN;
+                valStack[valTop] = res;
+                valTop++;
             }
 
-            if (values.Count != 1) throw new InvalidOperationException("Invalid expression");
-            return values.Pop();
+            if (valTop != 1) return double.NaN;
+            return valStack[0];
         }
 
-        private List<string> GetInnermostParenSlice(List<string> tks)
+        private void GetInnermostParenSlice(string[] src, int srcCount, out int startIndex, out int sliceCount)
         {
-            int start = tks.LastIndexOf("(");
-            if (start < 0) return new List<string>(tks);
-            return tks.Skip(start + 1).ToList();
+            int start = -1;
+            for (int i = srcCount - 1; i >= 0; i--)
+            {
+                if (src[i] == "(")
+                {
+                    start = i;
+                    break;
+                }
+            }
+
+            if (start < 0)
+            {
+                startIndex = 0;
+                sliceCount = srcCount;
+                return;
+            }
+
+            startIndex = start + 1;
+            sliceCount = srcCount - startIndex;
         }
+
         private void RefreshDisplay()
         {
-            var working = new List<string>(tokens);
+            string[] working = new string[MAX_TOKENS];
+            int workingCount = CopyTokensTo(working);
 
             if (isEnteringNumber)
-                working.Add(lbl_result.Text);
-
-            var slice = GetInnermostParenSlice(working);
-            if (slice.Count == 0) return;
-            string last = slice[^1];
-            bool lastIsOp = last is "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸";
-            if (lastIsOp)
-                slice.RemoveAt(slice.Count - 1);
-
-            if (slice.Count == 0) return;
-            if (slice[^1] == "(") return;
-
-            try
             {
-                double v = EvaluateTokens(slice);
+                if (workingCount < MAX_TOKENS)
+                {
+                    working[workingCount] = lbl_result.Text;
+                    workingCount++;
+                }
+            }
+
+            int sliceStart, sliceLen;
+            GetInnermostParenSlice(working, workingCount, out sliceStart, out sliceLen);
+
+            if (sliceLen <= 0) return;
+
+            int lastIndex = sliceStart + sliceLen - 1;
+            string last = working[lastIndex];
+            bool lastIsOp = IsOperator(last);
+            if (lastIsOp)
+            {
+                sliceLen--;
+            }
+
+            if (sliceLen <= 0) return;
+            if (working[sliceStart] == "(") return;
+
+            int evalCount = sliceStart + sliceLen;
+            double v = EvaluateTokens(working, evalCount);
+            if (!double.IsNaN(v) && !double.IsInfinity(v))
+            {
                 lbl_result.Text = FormatForDisplay(v);
             }
-            catch
-            {
-            }
         }
+
         private void PushCurrentEntryIfNeeded()
         {
             if (isEnteringNumber)
             {
-                tokens.Add(lbl_result.Text);
+                TokensAdd(lbl_result.Text);
                 isEnteringNumber = false;
             }
         }
 
-        private bool IsOperator(string tk) => tk is "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸";
+        private bool IsOperator(string tk)
+        {
+            return tk == "+" || tk == "-" || tk == "X" || tk == "÷" || tk == "mod" || tk == "xʸ";
+        }
 
         private void PressLeftParen()
         {
-            if (tokens.Count > 0)
+            if (tokenCount > 0)
             {
-                string last = tokens[^1];
-                bool lastIsNumber = double.TryParse(last, NumberStyles.Float, CultureInfo.InvariantCulture, out _);
+                string last = TokensLastOrDefault();
+                double dummy;
+                bool lastIsNumber = double.TryParse(last, NumberStyles.Float, CultureInfo.InvariantCulture, out dummy);
                 if (lastIsNumber || last == ")")
-                    tokens.Add("X");
+                    TokensAdd("X");
             }
 
-            tokens.Add("(");
-            lbl_expression.Text = string.Join(" ", tokens);
+            TokensAdd("(");
+            lbl_expression.Text = BuildExpressionString();
             lbl_result.Text = "0";
             isEnteringNumber = false;
         }
@@ -432,16 +551,17 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
         private void PressRightParen()
         {
             PushCurrentEntryIfNeeded();
-            if (!tokens.Contains("(")) return;
-            if (tokens.Count > 0)
+            if (!TokensContains("(")) return;
+
+            if (tokenCount > 0)
             {
-                string last = tokens[^1];
+                string last = TokensLastOrDefault();
                 if (last == "(" || IsOperator(last))
                     return;
             }
 
-            tokens.Add(")");
-            lbl_expression.Text = string.Join(" ", tokens);
+            TokensAdd(")");
+            lbl_expression.Text = BuildExpressionString();
             RefreshDisplay();
         }
 
@@ -451,17 +571,17 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
 
             PushCurrentEntryIfNeeded();
 
-            if (tokens.Count == 0)
+            if (tokenCount == 0)
             {
-                tokens.Add(CurrentValue().ToString(CultureInfo.InvariantCulture));
-                tokens.Add(op);
+                TokensAdd(CurrentValue().ToString(CultureInfo.InvariantCulture));
+                TokensAdd(op);
             }
             else
             {
-                string last = tokens[^1];
+                string last = TokensLastOrDefault();
                 if (IsOperator(last))
                 {
-                    tokens[^1] = op;
+                    tokens[tokenCount - 1] = op;
                 }
                 else if (last == "(")
                 {
@@ -475,77 +595,79 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                 }
                 else
                 {
-                    tokens.Add(op);
+                    TokensAdd(op);
                 }
             }
 
-            lbl_expression.Text = string.Join(" ", tokens);
+            lbl_expression.Text = BuildExpressionString();
             RefreshDisplay();
         }
 
         private void PressEquals()
         {
-            if (tokens.Count == 0 && !isEnteringNumber && canRepeatEquals && lastBinaryOp != "")
+            if (tokenCount == 0 && !isEnteringNumber && canRepeatEquals && lastBinaryOp != "")
             {
-                try
-                {
-                    double current = CurrentValue();
-                    double rRepeat = Apply(current, lastBinaryRight, lastBinaryOp);
-                    lbl_expression.Text = $"{FormatForDisplay(current)} {lastBinaryOp} {FormatForDisplay(lastBinaryRight)} =";
-                    SetResult(rRepeat);
-                    isEnteringNumber = false;
-                    return;
-                }
-                catch (DivideByZeroException)
-                {
-                    ShowError("Cannot divide by 0");
-                    return;
-                }
-                catch
+                double current = CurrentValue();
+                double rRepeat = Apply(current, lastBinaryRight, lastBinaryOp);
+                if (double.IsNaN(rRepeat) || double.IsInfinity(rRepeat))
                 {
                     ShowError("Invalid input");
                     return;
                 }
+
+                lbl_expression.Text = FormatForDisplay(current) + " " +
+                                      lastBinaryOp + " " +
+                                      FormatForDisplay(lastBinaryRight) + " =";
+                SetResult(rRepeat);
+                isEnteringNumber = false;
+                return;
             }
 
-            var working = new List<string>(tokens);
+            string[] working = new string[MAX_TOKENS];
+            int workingCount = CopyTokensTo(working);
 
             if (isEnteringNumber)
-                working.Add(lbl_result.Text);
-            while (working.Count > 0)
             {
-                string last = working[^1];
-                bool lastIsOp = last is "+" or "-" or "X" or "Ã·" or "mod" or "xÊ¸";
+                if (workingCount < MAX_TOKENS)
+                {
+                    working[workingCount] = lbl_result.Text;
+                    workingCount++;
+                }
+            }
+
+            while (workingCount > 0)
+            {
+                string last = working[workingCount - 1];
+                bool lastIsOp = IsOperator(last);
                 if (lastIsOp || last == "(")
                 {
-                    working.RemoveAt(working.Count - 1);
+                    workingCount--;
                     continue;
                 }
                 break;
             }
 
-            if (working.Count == 0) return;
+            if (workingCount == 0) return;
 
-            try
-            {
-                double r = EvaluateTokens(working);
-                lbl_expression.Text = string.Join(" ", working) + " =";
-                SetResult(r);
-                CaptureRepeatEqualsMemory(working);
-                tokens.Clear();
-                isEnteringNumber = false;
-            }
-            catch (DivideByZeroException)
-            {
-                ShowError("Cannot divide by 0");
-            }
-            catch
+            double r = EvaluateTokens(working, workingCount);
+
+            if (double.IsNaN(r) || double.IsInfinity(r))
             {
                 ShowError("Invalid input");
+                return;
             }
+
+            lbl_expression.Text = BuildExpressionStringFromArray(working, workingCount) + " =";
+            SetResult(r);
+            CaptureRepeatEqualsMemory(working, workingCount);
+            TokensClear();
+            isEnteringNumber = false;
         }
 
-        private double CurrentValue() => ParseDisplayValue(lbl_result);
+        private double CurrentValue()
+        {
+            return ParseDisplayValue(lbl_result);
+        }
 
         private void SetResult(double v)
         {
@@ -562,12 +684,9 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
         {
             lbl_expression.Text = "";
             lbl_result.Text = message;
-            leftOperand = 0;
-            pendingOperator = "";
-            lastRightOperand = 0;
-            lastOperator = "";
 
-            tokens.Clear();
+
+            TokensClear();
             isEnteringNumber = false;
             lastBinaryOp = "";
             lastBinaryRight = 0;
@@ -581,12 +700,13 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
 
         private static double Factorial(double n)
         {
-            if (n < 0) throw new ArgumentOutOfRangeException(nameof(n));
-            if (!IsInteger(n)) throw new ArgumentException("Factorial requires integer input.");
-            if (n > MAX_FACTORIAL_INPUT) throw new OverflowException("Result too large.");
+            if (n < 0) return double.NaN;
+            if (!IsInteger(n)) return double.NaN;
+            if (n > MAX_FACTORIAL_INPUT) return double.NaN;
 
             double r = 1;
-            for (int i = 2; i <= (int)Math.Round(n); i++)
+            int limit = (int)Math.Round(n);
+            for (int i = 2; i <= limit; i++)
                 r *= i;
             return r;
         }
@@ -601,7 +721,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
 
         private void ToggleSign()
         {
-            if (lbl_result.Text.StartsWith("-"))
+            if (lbl_result.Text.StartsWith("-", StringComparison.Ordinal))
                 lbl_result.Text = lbl_result.Text.Substring(1);
             else if (lbl_result.Text != "0")
                 lbl_result.Text = "-" + lbl_result.Text;
@@ -611,11 +731,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
 
         private void ClearAll()
         {
-            leftOperand = 0;
-            pendingOperator = "";
-            lastRightOperand = 0;
-            lastOperator = "";
-            tokens.Clear();
+            TokensClear();
             lastBinaryOp = "";
             lastBinaryRight = 0;
             canRepeatEquals = false;
@@ -727,15 +843,14 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
         private void FactorialUnary()
         {
             double x = CurrentValue();
-            try
-            {
-                SetResult(Factorial(x));
-                isEnteringNumber = true;
-            }
-            catch
+            double f = Factorial(x);
+            if (double.IsNaN(f) || double.IsInfinity(f))
             {
                 ShowError("Invalid input");
+                return;
             }
+            SetResult(f);
+            isEnteringNumber = true;
         }
 
         private void Sin()
@@ -767,7 +882,7 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                 ? Color.FromArgb(255, 205, 145)
                 : secondDefaultBackColor;
 
-            btn_power_10.Text = enabled ? "sin" : "10Ë£";
+            btn_power_10.Text = enabled ? "sin" : "10ˣ";
             btn_log10.Text = enabled ? "cos" : "log";
             btn_ln.Text = enabled ? "tan" : "ln";
         }
@@ -777,7 +892,87 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             SetSecondMode(!isSecondMode);
         }
 
-        private double FxCurrentValue() => ParseDisplayValue(lbl_fx_display);
+        // =========================
+        // FX (currency) logic
+        // =========================
+
+        private void Button_Click_FX(object sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn == null) return;
+            string v = btn.Text.Trim();
+
+            if (btn.Name == "btn_fx_convert" || v.Equals("Convert", StringComparison.OrdinalIgnoreCase))
+            {
+                FxConvert();
+                return;
+            }
+
+            if (v == ".")
+            {
+                AppendDecimalCommon(lbl_fx_display, ref fxIsEnteringAmount);
+            }
+            else if (v == "C")
+            {
+                FxClearAll();
+            }
+            else if (v == "⌫" || v == "←" || v == "Back")
+            {
+                BackspaceCommon(lbl_fx_display, ref fxIsEnteringAmount, FxClearEntry);
+            }
+            else if (v.Equals("Copy", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    Clipboard.SetText(lbl_fx_display.Text);
+                    lbl_fx_status.Text = "Copied";
+                }
+                catch
+                {
+                    lbl_fx_status.Text = "Copy failed";
+                }
+            }
+            else if (v.Equals("Paste", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    string t = Clipboard.GetText();
+                    if (t == null) t = "";
+                    t = t.Trim();
+                    if (t.Length == 0)
+                    {
+                        lbl_fx_status.Text = "Clipboard empty";
+                        return;
+                    }
+
+                    double vv;
+                    if (!double.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out vv) &&
+                        !double.TryParse(t, NumberStyles.Float, CultureInfo.CurrentCulture, out vv))
+                    {
+                        lbl_fx_status.Text = "Invalid paste";
+                        return;
+                    }
+
+                    FxSetDisplay(vv);
+                    fxIsEnteringAmount = true;
+                    lbl_fx_status.Text = "";
+                }
+                catch
+                {
+                    lbl_fx_status.Text = "Paste failed";
+                }
+            }
+            else
+            {
+                if (v.Length == 1 && char.IsDigit(v[0]))
+                    AppendDigitCommon(lbl_fx_display, v, ref fxIsEnteringAmount);
+            }
+        }
+
+        private double FxCurrentValue()
+        {
+            return ParseDisplayValue(lbl_fx_display);
+        }
 
         private void FxSetDisplay(double v)
         {
@@ -792,7 +987,8 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
 
         private static string NormalizeCurrency(string code)
         {
-            return (code ?? "").Trim().ToUpperInvariant();
+            if (code == null) return "";
+            return code.Trim().ToUpperInvariant();
         }
 
         private void FxInitCombos()
@@ -836,56 +1032,59 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             fxIsEnteringAmount = false;
         }
 
-        private void FxCopy()
+        private double FxGetRateOffline(string from, string to)
         {
-            try
+
+            double amountInUsdPerOneFrom;
+
+            if (from == "USD")
             {
-                Clipboard.SetText(lbl_fx_display.Text);
-                lbl_fx_status.Text = "Copied";
+                amountInUsdPerOneFrom = 1.0;
             }
-            catch
+            else if (from == "EUR")
             {
-                lbl_fx_status.Text = "Copy failed";
+                amountInUsdPerOneFrom = 1.0 / EUR_PER_USD;
             }
+            else if (from == "LBP")
+            {
+                amountInUsdPerOneFrom = 1.0 / LBP_PER_USD;
+            }
+            else
+            {
+                return 0;
+            }
+
+            double usdToTo;
+
+            if (to == "USD")
+            {
+                usdToTo = 1.0;
+            }
+            else if (to == "EUR")
+            {
+                usdToTo = EUR_PER_USD;
+            }
+            else if (to == "LBP")
+            {
+                usdToTo = LBP_PER_USD;
+            }
+            else
+            {
+                return 0;
+            }
+
+            return amountInUsdPerOneFrom * usdToTo;
         }
 
-        private void FxPaste()
+        private void FxConvert()
         {
-            try
-            {
-                string t = Clipboard.GetText()?.Trim() ?? "";
-                if (t.Length == 0)
-                {
-                    lbl_fx_status.Text = "Clipboard empty";
-                    return;
-                }
-
-                if (!double.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out double v) &&
-                    !double.TryParse(t, NumberStyles.Float, CultureInfo.CurrentCulture, out v))
-                {
-                    lbl_fx_status.Text = "Invalid paste";
-                    return;
-                }
-
-                FxSetDisplay(v);
-                fxIsEnteringAmount = true;
-                lbl_fx_status.Text = "";
-            }
-            catch
-            {
-                lbl_fx_status.Text = "Paste failed";
-            }
-        }
-
-        private async Task FxConvertAsync()
-        {
-            string from = cmb_fx_from?.SelectedItem?.ToString() ?? "";
-            string to = cmb_fx_to?.SelectedItem?.ToString() ?? "";
+            string from = cmb_fx_from == null ? "" : cmb_fx_from.SelectedItem as string;
+            string to = cmb_fx_to == null ? "" : cmb_fx_to.SelectedItem as string;
 
             from = NormalizeCurrency(from);
             to = NormalizeCurrency(to);
 
-            if (string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
+            if (from.Length == 0 || to.Length == 0)
             {
                 lbl_fx_status.Text = "Select FROM and TO currencies";
                 return;
@@ -898,50 +1097,20 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             }
 
             double amount = FxCurrentValue();
-            lbl_fx_status.Text = "Loading rate...";
+            double rate = FxGetRateOffline(from, to);
 
-            try
+            if (rate == 0)
             {
-                double rate = await FxGetRateAsync(from, to);
-                double converted = amount * rate;
-
-                FxSetDisplay(converted);
-                fxIsEnteringAmount = false;
-                lbl_fx_status.Text = $"{from}->{to} rate={rate.ToString(CultureInfo.InvariantCulture)}";
+                lbl_fx_status.Text = "Conversion failed (invalid rate)";
+                return;
             }
-            catch (Exception ex)
-            {
-                lbl_fx_status.Text = "Conversion failed: " + ex.Message;
-            }
+
+            double converted = amount * rate;
+
+            FxSetDisplay(converted);
+            fxIsEnteringAmount = false;
+            lbl_fx_status.Text = from + "->" + to + " rate=" +
+                                 rate.ToString(CultureInfo.InvariantCulture);
         }
-
-        private async Task<double> FxGetRateAsync(string from, string to)
-        {
-            string url = $"https://hexarate.paikama.co/api/rates/{from}/{to}/latest";
-
-            using HttpResponseMessage resp = await fxHttp.GetAsync(url);
-            resp.EnsureSuccessStatusCode();
-
-            string json = await resp.Content.ReadAsStringAsync();
-            using JsonDocument doc = JsonDocument.Parse(json);
-
-            if (!doc.RootElement.TryGetProperty("data", out JsonElement dataEl))
-                throw new Exception("Missing data");
-
-            if (!dataEl.TryGetProperty("mid", out JsonElement midEl))
-                throw new Exception("Missing mid");
-
-            double mid = midEl.GetDouble();
-
-            double unit = 1;
-            if (dataEl.TryGetProperty("unit", out JsonElement unitEl) && unitEl.ValueKind == JsonValueKind.Number)
-                unit = unitEl.GetDouble();
-
-            if (unit == 0)
-                throw new Exception("Invalid unit");
-
-            return mid / unit;
-        }
-
     }
 }
