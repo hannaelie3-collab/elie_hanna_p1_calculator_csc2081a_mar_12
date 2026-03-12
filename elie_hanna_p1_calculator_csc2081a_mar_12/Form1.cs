@@ -7,13 +7,21 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
 {
     public partial class Form1 : Form
     {
+        #region Initial variables and constants
+
         // =========================
         // Initial variables / fields
         // =========================
 
+        private string currentThemeName = "Light";
+        private Color baseDigitBackColor;
+        private Color baseNonDigitBackColor;
+
         private const int MAX_TOKENS = 256;
         private readonly string[] tokens = new string[MAX_TOKENS];
         private int tokenCount = 0;
+
+        private double memoryValue = 0.0;
 
         private string lastBinaryOp = "";
         private double lastBinaryRight = 0;
@@ -33,9 +41,21 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
         private const double EUR_PER_USD = 0.92;       // 1 USD ≈ 0.92 EUR (example)
         private const double LBP_PER_USD = 89500.0;    // 1 USD = 89,500 LBP
 
+        #endregion
+
         public Form1()
         {
             InitializeComponent();
+
+            rad_light.CheckedChanged += ThemeRadio_CheckedChanged;
+            rad_dark.CheckedChanged += ThemeRadio_CheckedChanged;
+            rad_midnight.CheckedChanged += ThemeRadio_CheckedChanged;
+
+            // Attach hover handlers to all buttons
+            WireAllButtonsHover(tabPage1);
+            WireAllButtonsHover(tabPage2);
+
+            ApplyTheme("Light");
 
             WireAllButtonsToOneHandlerIterative(tabPage1, Button_Click);
             WireAllButtonsToOneHandlerIterative(tabPage2, Button_Click_FX);
@@ -46,6 +66,8 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             FxInitCombos();
             FxClearAll();
         }
+
+        #region Common helper methods
 
         // =========================
         // Common helpers
@@ -65,6 +87,63 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             for (int i = 0; i < root.Controls.Count; i++)
             {
                 WireAllButtonsToOneHandlerIterative(root.Controls[i], handler);
+            }
+        }
+
+        private void CopyFromLabel(Label sourceLabel, Label statusLabel)
+        {
+            if (sourceLabel == null) return;
+
+            try
+            {
+                Clipboard.SetText(sourceLabel.Text);
+                if (statusLabel != null)
+                    statusLabel.Text = "Copied";
+            }
+            catch
+            {
+                if (statusLabel != null)
+                    statusLabel.Text = "Copy failed";
+            }
+        }
+
+        private void PasteToLabel(Label targetLabel, Label statusLabel, ref bool isEnteringFlag)
+        {
+            if (targetLabel == null) return;
+
+            try
+            {
+                string t = Clipboard.GetText();
+                if (t == null) t = "";
+                t = t.Trim();
+                if (t.Length == 0)
+                {
+                    if (statusLabel != null)
+                        statusLabel.Text = "Clipboard empty";
+                    return;
+                }
+
+                double v;
+                if (!double.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out v) &&
+                    !double.TryParse(t, NumberStyles.Float, CultureInfo.CurrentCulture, out v))
+                {
+                    if (statusLabel != null)
+                        statusLabel.Text = "Invalid paste";
+                    return;
+                }
+
+                // For calculator, you'll call this with lbl_result;
+                // for FX, with lbl_fx_display.
+                targetLabel.Text = FormatForDisplay(v);
+
+                isEnteringFlag = true;
+                if (statusLabel != null)
+                    statusLabel.Text = "";
+            }
+            catch
+            {
+                if (statusLabel != null)
+                    statusLabel.Text = "Paste failed";
             }
         }
 
@@ -186,6 +265,36 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             return result;
         }
 
+        private static bool IsInteger(double x)
+        {
+            return Math.Abs(x - Math.Round(x)) < INTEGER_TOLERANCE;
+        }
+
+        private static double Factorial(double n)
+        {
+            if (n < 0) return double.NaN;
+            if (!IsInteger(n)) return double.NaN;
+            if (n > MAX_FACTORIAL_INPUT) return double.NaN;
+
+            double r = 1;
+            int limit = (int)Math.Round(n);
+            for (int i = 2; i <= limit; i++)
+                r *= i;
+            return r;
+        }
+
+        private string FormatForDisplay(double v)
+        {
+            if (Math.Abs(v) < 1e-15) v = 0;
+            string normal = v.ToString(CultureInfo.InvariantCulture);
+            if (normal.Length <= MAX_RESULT_LEN) return normal;
+            return v.ToString(SCI_FORMAT, CultureInfo.InvariantCulture);
+        }
+
+        #endregion
+
+        #region Calculator logic
+
         // =========================
         // Calculator: button click
         // =========================
@@ -304,6 +413,33 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                     PressEquals();
                     break;
 
+                case "Copy":
+                    CopyFromLabel(lbl_result, lbl_expression);
+                    break;
+
+                case "Paste":
+                    PasteToLabel(lbl_result, lbl_expression, ref isEnteringNumber);
+                    break;
+
+                case "MC":
+                    MemoryClear();
+                    break;
+
+                case "MR":
+                    MemoryRecall();
+                    break;
+
+                case "MS":
+                    MemoryStore();
+                    break;
+
+                case "M+":
+                    MemoryAdd();
+                    break;
+
+                case "M-":
+                    MemorySubtract();
+                    break;
                 default:
                     if (v.Length == 1 && char.IsDigit(v[0]))
                         AppendDigitCommon(lbl_result, v, ref isEnteringNumber);
@@ -456,7 +592,9 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             return valStack[0];
         }
 
-        private void GetInnermostParenSlice(string[] src, int srcCount, out int startIndex, out int sliceCount)
+        // Returns the index after the last "(" (innermost open parenthesis).
+        // If there is no "(", it returns 0 (start of the whole expression).
+        private int GetInnermostParenStart(string[] src, int srcCount)
         {
             int start = -1;
             for (int i = srcCount - 1; i >= 0; i--)
@@ -469,21 +607,18 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             }
 
             if (start < 0)
-            {
-                startIndex = 0;
-                sliceCount = srcCount;
-                return;
-            }
+                return 0;          // no "(", evaluate whole expression
 
-            startIndex = start + 1;
-            sliceCount = srcCount - startIndex;
+            return start + 1;       // slice starts just after "("
         }
 
         private void RefreshDisplay()
         {
+            // Copy current tokens to working array
             string[] working = new string[MAX_TOKENS];
             int workingCount = CopyTokensTo(working);
 
+            // If user is entering a number, append it as the last token
             if (isEnteringNumber)
             {
                 if (workingCount < MAX_TOKENS)
@@ -493,24 +628,41 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
                 }
             }
 
-            int sliceStart, sliceLen;
-            GetInnermostParenSlice(working, workingCount, out sliceStart, out sliceLen);
+            if (workingCount == 0)
+                return;
 
-            if (sliceLen <= 0) return;
+            // Find start index of innermost parenthesis slice
+            int sliceStart = GetInnermostParenStart(working, workingCount);
 
+            // Compute initial slice length
+            int sliceLen = workingCount - sliceStart;
+            if (sliceLen <= 0)
+                return;
+
+            // If last token in slice is an operator, drop it
             int lastIndex = sliceStart + sliceLen - 1;
             string last = working[lastIndex];
-            bool lastIsOp = IsOperator(last);
-            if (lastIsOp)
+            if (IsOperator(last))
             {
                 sliceLen--;
             }
 
-            if (sliceLen <= 0) return;
-            if (working[sliceStart] == "(") return;
+            if (sliceLen <= 0)
+                return;
 
-            int evalCount = sliceStart + sliceLen;
-            double v = EvaluateTokens(working, evalCount);
+            // If the slice starts with "(", it's incomplete -> do nothing
+            if (working[sliceStart] == "(")
+                return;
+
+            // Build a temporary array containing only the slice
+            string[] slice = new string[sliceLen];
+            for (int i = 0; i < sliceLen; i++)
+            {
+                slice[i] = working[sliceStart + i];
+            }
+
+            // Evaluate only that slice
+            double v = EvaluateTokens(slice, sliceLen);
             if (!double.IsNaN(v) && !double.IsInfinity(v))
             {
                 lbl_result.Text = FormatForDisplay(v);
@@ -685,38 +837,11 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             lbl_expression.Text = "";
             lbl_result.Text = message;
 
-
             TokensClear();
             isEnteringNumber = false;
             lastBinaryOp = "";
             lastBinaryRight = 0;
             canRepeatEquals = false;
-        }
-
-        private static bool IsInteger(double x)
-        {
-            return Math.Abs(x - Math.Round(x)) < INTEGER_TOLERANCE;
-        }
-
-        private static double Factorial(double n)
-        {
-            if (n < 0) return double.NaN;
-            if (!IsInteger(n)) return double.NaN;
-            if (n > MAX_FACTORIAL_INPUT) return double.NaN;
-
-            double r = 1;
-            int limit = (int)Math.Round(n);
-            for (int i = 2; i <= limit; i++)
-                r *= i;
-            return r;
-        }
-
-        private string FormatForDisplay(double v)
-        {
-            if (Math.Abs(v) < 1e-15) v = 0;
-            string normal = v.ToString(CultureInfo.InvariantCulture);
-            if (normal.Length <= MAX_RESULT_LEN) return normal;
-            return v.ToString(SCI_FORMAT, CultureInfo.InvariantCulture);
         }
 
         private void ToggleSign()
@@ -892,6 +1017,39 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             SetSecondMode(!isSecondMode);
         }
 
+        private void MemoryClear()
+        {
+            memoryValue = 0.0;
+        }
+
+        private void MemoryStore()
+        {
+            double current = CurrentValue();
+            memoryValue = current;
+        }
+
+        private void MemoryRecall()
+        {
+            SetResult(memoryValue);
+            isEnteringNumber = true;
+        }
+
+        private void MemoryAdd()
+        {
+            double current = CurrentValue();
+            memoryValue += current;
+        }
+
+        private void MemorySubtract()
+        {
+            double current = CurrentValue();
+            memoryValue -= current;
+        }
+
+        #endregion
+
+        #region FX (currency converter) logic
+
         // =========================
         // FX (currency) logic
         // =========================
@@ -922,45 +1080,13 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             }
             else if (v.Equals("Copy", StringComparison.OrdinalIgnoreCase))
             {
-                try
-                {
-                    Clipboard.SetText(lbl_fx_display.Text);
-                    lbl_fx_status.Text = "Copied";
-                }
-                catch
-                {
-                    lbl_fx_status.Text = "Copy failed";
-                }
+                // Reusable copy
+                CopyFromLabel(lbl_fx_display, lbl_fx_status);
             }
             else if (v.Equals("Paste", StringComparison.OrdinalIgnoreCase))
             {
-                try
-                {
-                    string t = Clipboard.GetText();
-                    if (t == null) t = "";
-                    t = t.Trim();
-                    if (t.Length == 0)
-                    {
-                        lbl_fx_status.Text = "Clipboard empty";
-                        return;
-                    }
-
-                    double vv;
-                    if (!double.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out vv) &&
-                        !double.TryParse(t, NumberStyles.Float, CultureInfo.CurrentCulture, out vv))
-                    {
-                        lbl_fx_status.Text = "Invalid paste";
-                        return;
-                    }
-
-                    FxSetDisplay(vv);
-                    fxIsEnteringAmount = true;
-                    lbl_fx_status.Text = "";
-                }
-                catch
-                {
-                    lbl_fx_status.Text = "Paste failed";
-                }
+                // Reusable paste
+                PasteToLabel(lbl_fx_display, lbl_fx_status, ref fxIsEnteringAmount);
             }
             else
             {
@@ -1034,7 +1160,6 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
 
         private double FxGetRateOffline(string from, string to)
         {
-
             double amountInUsdPerOneFrom;
 
             if (from == "USD")
@@ -1112,5 +1237,206 @@ namespace elie_hanna_p1_calculator_csc2081a_mar_12
             lbl_fx_status.Text = from + "->" + to + " rate=" +
                                  rate.ToString(CultureInfo.InvariantCulture);
         }
+
+        #endregion
+
+        #region Radio theme logic
+
+        private void ThemeRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rad_light.Checked)
+            {
+                ApplyTheme("Light");
+            }
+            else if (rad_dark.Checked)
+            {
+                ApplyTheme("Dark");
+            }
+            else if (rad_midnight.Checked)
+            {
+                ApplyTheme("Midnight");
+            }
+        }
+
+
+        private void ApplyTheme(string themeName)
+        {
+            currentThemeName = themeName;
+
+            Color formBack;
+            Color tabBack;
+            Color displayBack;
+            Color displayFore;
+            Color buttonBack;
+            Color buttonDigitBack;
+            Color buttonFore;
+            Font displayFont;
+            Font buttonFont;
+
+            if (themeName == "Dark")
+            {
+                formBack = Color.FromArgb(45, 45, 48);
+                tabBack = Color.FromArgb(37, 37, 38);
+                displayBack = Color.FromArgb(30, 30, 30);
+                displayFore = Color.White;
+                buttonBack = Color.FromArgb(63, 63, 70);
+                buttonDigitBack = Color.FromArgb(0, 122, 204);
+                buttonFore = Color.White;
+                displayFont = new Font("Segoe UI", 36f, FontStyle.Bold);
+                buttonFont = new Font("Segoe UI", 14.25f, FontStyle.Regular);
+            }
+            else if (themeName == "Midnight")
+            {
+                formBack = Color.FromArgb(10, 20, 40);
+                tabBack = Color.FromArgb(15, 25, 50);
+                displayBack = Color.FromArgb(5, 10, 25);
+                displayFore = Color.FromArgb(180, 220, 255);
+                buttonBack = Color.FromArgb(25, 45, 80);
+                buttonDigitBack = Color.FromArgb(40, 80, 140);
+                buttonFore = Color.White;
+                // Slightly different font to show “custom font” requirement
+                displayFont = new Font("Consolas", 34f, FontStyle.Bold);
+                buttonFont = new Font("Segoe UI", 13.5f, FontStyle.Regular);
+            }
+            else // Light (default)
+            {
+                formBack = SystemColors.Control;
+                tabBack = Color.White;
+                displayBack = Color.White;
+                displayFore = Color.Black;
+                buttonBack = SystemColors.ButtonHighlight;
+                buttonDigitBack = SystemColors.ActiveCaption;
+                buttonFore = Color.Black;
+                displayFont = new Font("Segoe UI", 36f, FontStyle.Regular);
+                buttonFont = new Font("Segoe UI", 14.25f, FontStyle.Regular);
+            }
+
+            // Store base colors for hover logic
+            baseDigitBackColor = buttonDigitBack;
+            baseNonDigitBackColor = buttonBack;
+
+            // Form background
+            this.BackColor = formBack;
+
+            // Tab pages background
+            tabPage1.BackColor = tabBack;
+            tabPage2.BackColor = tabBack;
+
+            // Displays
+            lbl_result.BackColor = displayBack;
+            lbl_result.ForeColor = displayFore;
+            lbl_result.Font = displayFont;
+
+            lbl_expression.BackColor = displayBack;
+            lbl_expression.ForeColor = displayFore;
+
+            lbl_fx_display.BackColor = displayBack;
+            lbl_fx_display.ForeColor = displayFore;
+            lbl_fx_display.Font = displayFont;
+
+            lbl_fx_status.BackColor = displayBack;
+            lbl_fx_status.ForeColor = displayFore;
+
+            // Radio buttons (keep readable against form background)
+            rad_light.BackColor = formBack;
+            rad_dark.BackColor = formBack;
+            rad_midnight.BackColor = formBack;
+            rad_light.ForeColor = displayFore;
+            rad_dark.ForeColor = displayFore;
+            rad_midnight.ForeColor = displayFore;
+
+            // Apply to all buttons on both tabs
+            ApplyThemeToButtons(tabPage1, buttonBack, buttonDigitBack, buttonFore, buttonFont);
+            ApplyThemeToButtons(tabPage2, buttonBack, buttonDigitBack, buttonFore, buttonFont);
+        }
+
+        private void ApplyThemeToButtons(Control parent, Color buttonBack, Color digitBack, Color buttonFore, Font buttonFont)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                // Recurse into containers like TableLayoutPanel
+                if (c is Panel || c is TableLayoutPanel || c is TabControl || c is TabPage || c is GroupBox)
+                {
+                    ApplyThemeToButtons(c, buttonBack, digitBack, buttonFore, buttonFont);
+                }
+
+                Button b = c as Button;
+                if (b != null)
+                {
+                    // Decide if this is a digit button to use digitBack color
+                    bool isDigit =
+                        b.Text == "0" || b.Text == "1" || b.Text == "2" ||
+                        b.Text == "3" || b.Text == "4" || b.Text == "5" ||
+                        b.Text == "6" || b.Text == "7" || b.Text == "8" ||
+                        b.Text == "9";
+
+                    b.BackColor = isDigit ? digitBack : buttonBack;
+                    b.ForeColor = buttonFore;
+                    b.Font = buttonFont;
+                }
+            }
+        }
+
+        #endregion
+
+        #region mouse hover effects for buttons
+
+        private void WireAllButtonsHover(Control root)
+        {
+            foreach (Control c in root.Controls)
+            {
+                if (c is Button b)
+                {
+                    b.MouseEnter -= Button_MouseEnter;
+                    b.MouseEnter += Button_MouseEnter;
+                    b.MouseLeave -= Button_MouseLeave;
+                    b.MouseLeave += Button_MouseLeave;
+                }
+
+                // Recurse into containers like TableLayoutPanel, TabPage, etc.
+                if (c.HasChildren)
+                {
+                    WireAllButtonsHover(c);
+                }
+            }
+        }
+
+        private bool IsDigitButton(Button b)
+        {
+            string t = b.Text;
+            return t == "0" || t == "1" || t == "2" || t == "3" || t == "4" ||
+                   t == "5" || t == "6" || t == "7" || t == "8" || t == "9";
+        }
+
+        private void Button_MouseEnter(object sender, EventArgs e)
+        {
+            Button b = sender as Button;
+            if (b == null) return;
+
+            bool isDigit = IsDigitButton(b);
+
+            // Swap colors on hover
+            if (isDigit)
+                b.BackColor = baseNonDigitBackColor;
+            else
+                b.BackColor = baseDigitBackColor;
+        }
+
+        private void Button_MouseLeave(object sender, EventArgs e)
+        {
+            Button b = sender as Button;
+            if (b == null) return;
+
+            bool isDigit = IsDigitButton(b);
+
+            // Restore original color for this theme
+            if (isDigit)
+                b.BackColor = baseDigitBackColor;
+            else
+                b.BackColor = baseNonDigitBackColor;
+        }
+
+        #endregion
+
     }
 }
