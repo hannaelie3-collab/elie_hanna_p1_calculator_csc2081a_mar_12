@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -116,7 +117,7 @@
             tabControl1.Location = new Point(0, 0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(660, 661);
+            tabControl1.Size = new Size(771, 661);
             tabControl1.TabIndex = 8;
             // 
             // tabPage1
@@ -127,7 +128,7 @@
             tabPage1.Location = new Point(4, 45);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(652, 612);
+            tabPage1.Size = new Size(763, 612);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Scientific Calculator";
             tabPage1.UseVisualStyleBackColor = true;
@@ -197,7 +198,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(646, 453);
+            tableLayoutPanel1.Size = new Size(757, 453);
             tableLayoutPanel1.TabIndex = 10;
             // 
             // btn_m_subs
@@ -205,10 +206,10 @@
             btn_m_subs.BackColor = SystemColors.ButtonHighlight;
             btn_m_subs.Dock = DockStyle.Fill;
             btn_m_subs.Font = new Font("Segoe UI", 14.25F);
-            btn_m_subs.Location = new Point(538, 386);
+            btn_m_subs.Location = new Point(633, 386);
             btn_m_subs.Margin = new Padding(3, 2, 3, 2);
             btn_m_subs.Name = "btn_m_subs";
-            btn_m_subs.Size = new Size(105, 65);
+            btn_m_subs.Size = new Size(121, 65);
             btn_m_subs.TabIndex = 47;
             btn_m_subs.Text = "M-";
             btn_m_subs.UseVisualStyleBackColor = false;
@@ -218,10 +219,10 @@
             btn_m_add.BackColor = SystemColors.ButtonHighlight;
             btn_m_add.Dock = DockStyle.Fill;
             btn_m_add.Font = new Font("Segoe UI", 14.25F);
-            btn_m_add.Location = new Point(538, 322);
+            btn_m_add.Location = new Point(633, 322);
             btn_m_add.Margin = new Padding(3, 2, 3, 2);
             btn_m_add.Name = "btn_m_add";
-            btn_m_add.Size = new Size(105, 60);
+            btn_m_add.Size = new Size(121, 60);
             btn_m_add.TabIndex = 46;
             btn_m_add.Text = "M+";
             btn_m_add.UseVisualStyleBackColor = false;
@@ -231,10 +232,10 @@
             btn_ms.BackColor = SystemColors.ButtonHighlight;
             btn_ms.Dock = DockStyle.Fill;
             btn_ms.Font = new Font("Segoe UI", 14.25F);
-            btn_ms.Location = new Point(538, 258);
+            btn_ms.Location = new Point(633, 258);
             btn_ms.Margin = new Padding(3, 2, 3, 2);
             btn_ms.Name = "btn_ms";
-            btn_ms.Size = new Size(105, 60);
+            btn_ms.Size = new Size(121, 60);
             btn_ms.TabIndex = 45;
             btn_ms.Text = "MS";
             btn_ms.UseVisualStyleBackColor = false;
@@ -244,10 +245,10 @@
             btn_mr.BackColor = SystemColors.ButtonHighlight;
             btn_mr.Dock = DockStyle.Fill;
             btn_mr.Font = new Font("Segoe UI", 14.25F);
-            btn_mr.Location = new Point(538, 194);
+            btn_mr.Location = new Point(633, 194);
             btn_mr.Margin = new Padding(3, 2, 3, 2);
             btn_mr.Name = "btn_mr";
-            btn_mr.Size = new Size(105, 60);
+            btn_mr.Size = new Size(121, 60);
             btn_mr.TabIndex = 44;
             btn_mr.Text = "MR";
             btn_mr.UseVisualStyleBackColor = false;
@@ -257,10 +258,10 @@
             btn_mc.BackColor = SystemColors.ButtonHighlight;
             btn_mc.Dock = DockStyle.Fill;
             btn_mc.Font = new Font("Segoe UI", 14.25F);
-            btn_mc.Location = new Point(538, 130);
+            btn_mc.Location = new Point(633, 130);
             btn_mc.Margin = new Padding(3, 2, 3, 2);
             btn_mc.Name = "btn_mc";
-            btn_mc.Size = new Size(105, 60);
+            btn_mc.Size = new Size(121, 60);
             btn_mc.TabIndex = 43;
             btn_mc.Text = "MC";
             btn_mc.UseVisualStyleBackColor = false;
@@ -273,7 +274,7 @@
             btn_ln.Location = new Point(3, 386);
             btn_ln.Margin = new Padding(3, 2, 3, 2);
             btn_ln.Name = "btn_ln";
-            btn_ln.Size = new Size(101, 65);
+            btn_ln.Size = new Size(120, 65);
             btn_ln.TabIndex = 37;
             btn_ln.Text = "ln";
             btn_ln.UseVisualStyleBackColor = false;
@@ -283,10 +284,10 @@
             btn_plus_minus.BackColor = SystemColors.ButtonHighlight;
             btn_plus_minus.Dock = DockStyle.Fill;
             btn_plus_minus.Font = new Font("Segoe UI", 14.25F);
-            btn_plus_minus.Location = new Point(110, 386);
+            btn_plus_minus.Location = new Point(129, 386);
             btn_plus_minus.Margin = new Padding(3, 2, 3, 2);
             btn_plus_minus.Name = "btn_plus_minus";
-            btn_plus_minus.Size = new Size(101, 65);
+            btn_plus_minus.Size = new Size(120, 65);
             btn_plus_minus.TabIndex = 26;
             btn_plus_minus.Text = "+/-";
             btn_plus_minus.UseVisualStyleBackColor = false;
@@ -296,10 +297,10 @@
             btn_digit_0.BackColor = SystemColors.ActiveCaption;
             btn_digit_0.Dock = DockStyle.Fill;
             btn_digit_0.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_0.Location = new Point(217, 386);
+            btn_digit_0.Location = new Point(255, 386);
             btn_digit_0.Margin = new Padding(3, 2, 3, 2);
             btn_digit_0.Name = "btn_digit_0";
-            btn_digit_0.Size = new Size(101, 65);
+            btn_digit_0.Size = new Size(120, 65);
             btn_digit_0.TabIndex = 27;
             btn_digit_0.Text = "0";
             btn_digit_0.UseVisualStyleBackColor = false;
@@ -309,10 +310,10 @@
             btn_decimal.BackColor = SystemColors.ButtonHighlight;
             btn_decimal.Dock = DockStyle.Fill;
             btn_decimal.Font = new Font("Segoe UI", 14.25F);
-            btn_decimal.Location = new Point(324, 386);
+            btn_decimal.Location = new Point(381, 386);
             btn_decimal.Margin = new Padding(3, 2, 3, 2);
             btn_decimal.Name = "btn_decimal";
-            btn_decimal.Size = new Size(101, 65);
+            btn_decimal.Size = new Size(120, 65);
             btn_decimal.TabIndex = 28;
             btn_decimal.Text = ".";
             btn_decimal.UseVisualStyleBackColor = false;
@@ -324,10 +325,10 @@
             btn_equals.Dock = DockStyle.Fill;
             btn_equals.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btn_equals.ForeColor = SystemColors.ActiveCaptionText;
-            btn_equals.Location = new Point(431, 386);
+            btn_equals.Location = new Point(507, 386);
             btn_equals.Margin = new Padding(3, 2, 3, 2);
             btn_equals.Name = "btn_equals";
-            btn_equals.Size = new Size(101, 65);
+            btn_equals.Size = new Size(120, 65);
             btn_equals.TabIndex = 29;
             btn_equals.Text = "=";
             btn_equals.UseVisualStyleBackColor = false;
@@ -340,7 +341,7 @@
             btn_log10.Location = new Point(3, 322);
             btn_log10.Margin = new Padding(3, 2, 3, 2);
             btn_log10.Name = "btn_log10";
-            btn_log10.Size = new Size(101, 60);
+            btn_log10.Size = new Size(120, 60);
             btn_log10.TabIndex = 36;
             btn_log10.Text = "log";
             btn_log10.UseVisualStyleBackColor = false;
@@ -350,10 +351,10 @@
             btn_digit_1.BackColor = SystemColors.ActiveCaption;
             btn_digit_1.Dock = DockStyle.Fill;
             btn_digit_1.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_1.Location = new Point(110, 322);
+            btn_digit_1.Location = new Point(129, 322);
             btn_digit_1.Margin = new Padding(3, 2, 3, 2);
             btn_digit_1.Name = "btn_digit_1";
-            btn_digit_1.Size = new Size(101, 60);
+            btn_digit_1.Size = new Size(120, 60);
             btn_digit_1.TabIndex = 21;
             btn_digit_1.Text = "1";
             btn_digit_1.UseVisualStyleBackColor = false;
@@ -363,10 +364,10 @@
             btn_digit_2.BackColor = SystemColors.ActiveCaption;
             btn_digit_2.Dock = DockStyle.Fill;
             btn_digit_2.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_2.Location = new Point(217, 322);
+            btn_digit_2.Location = new Point(255, 322);
             btn_digit_2.Margin = new Padding(3, 2, 3, 2);
             btn_digit_2.Name = "btn_digit_2";
-            btn_digit_2.Size = new Size(101, 60);
+            btn_digit_2.Size = new Size(120, 60);
             btn_digit_2.TabIndex = 22;
             btn_digit_2.Text = "2";
             btn_digit_2.UseVisualStyleBackColor = false;
@@ -376,10 +377,10 @@
             btn_digit_3.BackColor = SystemColors.ActiveCaption;
             btn_digit_3.Dock = DockStyle.Fill;
             btn_digit_3.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_3.Location = new Point(324, 322);
+            btn_digit_3.Location = new Point(381, 322);
             btn_digit_3.Margin = new Padding(3, 2, 3, 2);
             btn_digit_3.Name = "btn_digit_3";
-            btn_digit_3.Size = new Size(101, 60);
+            btn_digit_3.Size = new Size(120, 60);
             btn_digit_3.TabIndex = 23;
             btn_digit_3.Text = "3";
             btn_digit_3.UseVisualStyleBackColor = false;
@@ -389,10 +390,10 @@
             btn_add.BackColor = SystemColors.ButtonHighlight;
             btn_add.Dock = DockStyle.Fill;
             btn_add.Font = new Font("Segoe UI", 20.25F);
-            btn_add.Location = new Point(431, 322);
+            btn_add.Location = new Point(507, 322);
             btn_add.Margin = new Padding(3, 2, 3, 2);
             btn_add.Name = "btn_add";
-            btn_add.Size = new Size(101, 60);
+            btn_add.Size = new Size(120, 60);
             btn_add.TabIndex = 24;
             btn_add.Text = "+";
             btn_add.UseVisualStyleBackColor = false;
@@ -405,7 +406,7 @@
             btn_power_10.Location = new Point(3, 258);
             btn_power_10.Margin = new Padding(3, 2, 3, 2);
             btn_power_10.Name = "btn_power_10";
-            btn_power_10.Size = new Size(101, 60);
+            btn_power_10.Size = new Size(120, 60);
             btn_power_10.TabIndex = 35;
             btn_power_10.Text = "10ˣ";
             btn_power_10.UseVisualStyleBackColor = false;
@@ -415,10 +416,10 @@
             btn_digit_4.BackColor = SystemColors.ActiveCaption;
             btn_digit_4.Dock = DockStyle.Fill;
             btn_digit_4.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_4.Location = new Point(110, 258);
+            btn_digit_4.Location = new Point(129, 258);
             btn_digit_4.Margin = new Padding(3, 2, 3, 2);
             btn_digit_4.Name = "btn_digit_4";
-            btn_digit_4.Size = new Size(101, 60);
+            btn_digit_4.Size = new Size(120, 60);
             btn_digit_4.TabIndex = 16;
             btn_digit_4.Text = "4";
             btn_digit_4.UseVisualStyleBackColor = false;
@@ -428,10 +429,10 @@
             btn_digit_5.BackColor = SystemColors.ActiveCaption;
             btn_digit_5.Dock = DockStyle.Fill;
             btn_digit_5.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_5.Location = new Point(217, 258);
+            btn_digit_5.Location = new Point(255, 258);
             btn_digit_5.Margin = new Padding(3, 2, 3, 2);
             btn_digit_5.Name = "btn_digit_5";
-            btn_digit_5.Size = new Size(101, 60);
+            btn_digit_5.Size = new Size(120, 60);
             btn_digit_5.TabIndex = 17;
             btn_digit_5.Text = "5";
             btn_digit_5.UseVisualStyleBackColor = false;
@@ -441,10 +442,10 @@
             btn_digit_6.BackColor = SystemColors.ActiveCaption;
             btn_digit_6.Dock = DockStyle.Fill;
             btn_digit_6.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_6.Location = new Point(324, 258);
+            btn_digit_6.Location = new Point(381, 258);
             btn_digit_6.Margin = new Padding(3, 2, 3, 2);
             btn_digit_6.Name = "btn_digit_6";
-            btn_digit_6.Size = new Size(101, 60);
+            btn_digit_6.Size = new Size(120, 60);
             btn_digit_6.TabIndex = 18;
             btn_digit_6.Text = "6";
             btn_digit_6.UseVisualStyleBackColor = false;
@@ -454,10 +455,10 @@
             btn_subtract.BackColor = SystemColors.ButtonHighlight;
             btn_subtract.Dock = DockStyle.Fill;
             btn_subtract.Font = new Font("Segoe UI", 20.25F);
-            btn_subtract.Location = new Point(431, 258);
+            btn_subtract.Location = new Point(507, 258);
             btn_subtract.Margin = new Padding(3, 2, 3, 2);
             btn_subtract.Name = "btn_subtract";
-            btn_subtract.Size = new Size(101, 60);
+            btn_subtract.Size = new Size(120, 60);
             btn_subtract.TabIndex = 19;
             btn_subtract.Text = "-";
             btn_subtract.UseVisualStyleBackColor = false;
@@ -470,7 +471,7 @@
             btn_power.Location = new Point(3, 194);
             btn_power.Margin = new Padding(3, 2, 3, 2);
             btn_power.Name = "btn_power";
-            btn_power.Size = new Size(101, 60);
+            btn_power.Size = new Size(120, 60);
             btn_power.TabIndex = 34;
             btn_power.Text = "xʸ";
             btn_power.UseVisualStyleBackColor = false;
@@ -480,10 +481,10 @@
             btn_digit_7.BackColor = SystemColors.ActiveCaption;
             btn_digit_7.Dock = DockStyle.Fill;
             btn_digit_7.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_7.Location = new Point(110, 194);
+            btn_digit_7.Location = new Point(129, 194);
             btn_digit_7.Margin = new Padding(3, 2, 3, 2);
             btn_digit_7.Name = "btn_digit_7";
-            btn_digit_7.Size = new Size(101, 60);
+            btn_digit_7.Size = new Size(120, 60);
             btn_digit_7.TabIndex = 11;
             btn_digit_7.Text = "7";
             btn_digit_7.UseVisualStyleBackColor = false;
@@ -493,10 +494,10 @@
             btn_digit_8.BackColor = SystemColors.ActiveCaption;
             btn_digit_8.Dock = DockStyle.Fill;
             btn_digit_8.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_8.Location = new Point(217, 194);
+            btn_digit_8.Location = new Point(255, 194);
             btn_digit_8.Margin = new Padding(3, 2, 3, 2);
             btn_digit_8.Name = "btn_digit_8";
-            btn_digit_8.Size = new Size(101, 60);
+            btn_digit_8.Size = new Size(120, 60);
             btn_digit_8.TabIndex = 12;
             btn_digit_8.Text = "8";
             btn_digit_8.UseVisualStyleBackColor = false;
@@ -506,10 +507,10 @@
             btn_digit_9.BackColor = SystemColors.ActiveCaption;
             btn_digit_9.Dock = DockStyle.Fill;
             btn_digit_9.Font = new Font("Segoe UI", 14.25F);
-            btn_digit_9.Location = new Point(324, 194);
+            btn_digit_9.Location = new Point(381, 194);
             btn_digit_9.Margin = new Padding(3, 2, 3, 2);
             btn_digit_9.Name = "btn_digit_9";
-            btn_digit_9.Size = new Size(101, 60);
+            btn_digit_9.Size = new Size(120, 60);
             btn_digit_9.TabIndex = 13;
             btn_digit_9.Text = "9";
             btn_digit_9.UseVisualStyleBackColor = false;
@@ -519,10 +520,10 @@
             btn_multiply.BackColor = SystemColors.ButtonHighlight;
             btn_multiply.Dock = DockStyle.Fill;
             btn_multiply.Font = new Font("Segoe UI", 20.25F);
-            btn_multiply.Location = new Point(431, 194);
+            btn_multiply.Location = new Point(507, 194);
             btn_multiply.Margin = new Padding(3, 2, 3, 2);
             btn_multiply.Name = "btn_multiply";
-            btn_multiply.Size = new Size(101, 60);
+            btn_multiply.Size = new Size(120, 60);
             btn_multiply.TabIndex = 14;
             btn_multiply.Text = "X";
             btn_multiply.UseVisualStyleBackColor = false;
@@ -535,7 +536,7 @@
             btn_nth_root.Location = new Point(3, 130);
             btn_nth_root.Margin = new Padding(3, 2, 3, 2);
             btn_nth_root.Name = "btn_nth_root";
-            btn_nth_root.Size = new Size(101, 60);
+            btn_nth_root.Size = new Size(120, 60);
             btn_nth_root.TabIndex = 8;
             btn_nth_root.Text = "²√x";
             btn_nth_root.UseVisualStyleBackColor = false;
@@ -545,10 +546,10 @@
             button1.BackColor = SystemColors.ButtonHighlight;
             button1.Dock = DockStyle.Fill;
             button1.Font = new Font("Segoe UI", 14.25F);
-            button1.Location = new Point(110, 130);
+            button1.Location = new Point(129, 130);
             button1.Margin = new Padding(3, 2, 3, 2);
             button1.Name = "button1";
-            button1.Size = new Size(101, 60);
+            button1.Size = new Size(120, 60);
             button1.TabIndex = 38;
             button1.Text = "(";
             button1.UseVisualStyleBackColor = false;
@@ -558,10 +559,10 @@
             button3.BackColor = SystemColors.ButtonHighlight;
             button3.Dock = DockStyle.Fill;
             button3.Font = new Font("Segoe UI", 14.25F);
-            button3.Location = new Point(217, 130);
+            button3.Location = new Point(255, 130);
             button3.Margin = new Padding(3, 2, 3, 2);
             button3.Name = "button3";
-            button3.Size = new Size(101, 60);
+            button3.Size = new Size(120, 60);
             button3.TabIndex = 39;
             button3.Text = ")";
             button3.UseVisualStyleBackColor = false;
@@ -571,10 +572,10 @@
             btn_factorial.BackColor = SystemColors.ButtonHighlight;
             btn_factorial.Dock = DockStyle.Fill;
             btn_factorial.Font = new Font("Segoe UI", 14.25F);
-            btn_factorial.Location = new Point(324, 130);
+            btn_factorial.Location = new Point(381, 130);
             btn_factorial.Margin = new Padding(3, 2, 3, 2);
             btn_factorial.Name = "btn_factorial";
-            btn_factorial.Size = new Size(101, 60);
+            btn_factorial.Size = new Size(120, 60);
             btn_factorial.TabIndex = 30;
             btn_factorial.Text = "n!";
             btn_factorial.UseVisualStyleBackColor = false;
@@ -584,10 +585,10 @@
             btn_divide.BackColor = SystemColors.ButtonHighlight;
             btn_divide.Dock = DockStyle.Fill;
             btn_divide.Font = new Font("Segoe UI", 20.25F);
-            btn_divide.Location = new Point(431, 130);
+            btn_divide.Location = new Point(507, 130);
             btn_divide.Margin = new Padding(3, 2, 3, 2);
             btn_divide.Name = "btn_divide";
-            btn_divide.Size = new Size(101, 60);
+            btn_divide.Size = new Size(120, 60);
             btn_divide.TabIndex = 9;
             btn_divide.Text = "÷";
             btn_divide.UseVisualStyleBackColor = false;
@@ -600,7 +601,7 @@
             btn_square.Location = new Point(3, 66);
             btn_square.Margin = new Padding(3, 2, 3, 2);
             btn_square.Name = "btn_square";
-            btn_square.Size = new Size(101, 60);
+            btn_square.Size = new Size(120, 60);
             btn_square.TabIndex = 7;
             btn_square.Text = "x²";
             btn_square.UseVisualStyleBackColor = false;
@@ -610,10 +611,10 @@
             btn_reciprocal.BackColor = SystemColors.ButtonHighlight;
             btn_reciprocal.Dock = DockStyle.Fill;
             btn_reciprocal.Font = new Font("Microsoft Sans Serif", 14.25F);
-            btn_reciprocal.Location = new Point(110, 66);
+            btn_reciprocal.Location = new Point(129, 66);
             btn_reciprocal.Margin = new Padding(3, 2, 3, 2);
             btn_reciprocal.Name = "btn_reciprocal";
-            btn_reciprocal.Size = new Size(101, 60);
+            btn_reciprocal.Size = new Size(120, 60);
             btn_reciprocal.TabIndex = 6;
             btn_reciprocal.Text = "1/x";
             btn_reciprocal.UseVisualStyleBackColor = false;
@@ -623,10 +624,10 @@
             btn_abs.BackColor = SystemColors.ButtonHighlight;
             btn_abs.Dock = DockStyle.Fill;
             btn_abs.Font = new Font("Segoe UI", 14.25F);
-            btn_abs.Location = new Point(217, 66);
+            btn_abs.Location = new Point(255, 66);
             btn_abs.Margin = new Padding(3, 2, 3, 2);
             btn_abs.Name = "btn_abs";
-            btn_abs.Size = new Size(101, 60);
+            btn_abs.Size = new Size(120, 60);
             btn_abs.TabIndex = 33;
             btn_abs.Text = "|x|";
             btn_abs.UseVisualStyleBackColor = false;
@@ -636,10 +637,10 @@
             btn_exp.BackColor = SystemColors.ButtonHighlight;
             btn_exp.Dock = DockStyle.Fill;
             btn_exp.Font = new Font("Segoe UI", 14.25F);
-            btn_exp.Location = new Point(324, 66);
+            btn_exp.Location = new Point(381, 66);
             btn_exp.Margin = new Padding(3, 2, 3, 2);
             btn_exp.Name = "btn_exp";
-            btn_exp.Size = new Size(101, 60);
+            btn_exp.Size = new Size(120, 60);
             btn_exp.TabIndex = 23;
             btn_exp.Text = "exp";
             btn_exp.UseVisualStyleBackColor = false;
@@ -649,10 +650,10 @@
             btn_mod.BackColor = SystemColors.ButtonHighlight;
             btn_mod.Dock = DockStyle.Fill;
             btn_mod.Font = new Font("Segoe UI", 14.25F);
-            btn_mod.Location = new Point(431, 66);
+            btn_mod.Location = new Point(507, 66);
             btn_mod.Margin = new Padding(3, 2, 3, 2);
             btn_mod.Name = "btn_mod";
-            btn_mod.Size = new Size(101, 60);
+            btn_mod.Size = new Size(120, 60);
             btn_mod.TabIndex = 22;
             btn_mod.Text = "mod";
             btn_mod.UseVisualStyleBackColor = false;
@@ -665,7 +666,7 @@
             btn_second.Location = new Point(3, 2);
             btn_second.Margin = new Padding(3, 2, 3, 2);
             btn_second.Name = "btn_second";
-            btn_second.Size = new Size(101, 60);
+            btn_second.Size = new Size(120, 60);
             btn_second.TabIndex = 40;
             btn_second.Text = "2nd";
             btn_second.UseVisualStyleBackColor = false;
@@ -675,10 +676,10 @@
             btn_pi.BackColor = SystemColors.ButtonHighlight;
             btn_pi.Dock = DockStyle.Fill;
             btn_pi.Font = new Font("Segoe UI", 14.25F);
-            btn_pi.Location = new Point(110, 2);
+            btn_pi.Location = new Point(129, 2);
             btn_pi.Margin = new Padding(3, 2, 3, 2);
             btn_pi.Name = "btn_pi";
-            btn_pi.Size = new Size(101, 60);
+            btn_pi.Size = new Size(120, 60);
             btn_pi.TabIndex = 24;
             btn_pi.Text = "π";
             btn_pi.UseVisualStyleBackColor = false;
@@ -688,10 +689,10 @@
             btn_e.BackColor = SystemColors.ButtonHighlight;
             btn_e.Dock = DockStyle.Fill;
             btn_e.Font = new Font("Segoe UI", 14.25F);
-            btn_e.Location = new Point(217, 2);
+            btn_e.Location = new Point(255, 2);
             btn_e.Margin = new Padding(3, 2, 3, 2);
             btn_e.Name = "btn_e";
-            btn_e.Size = new Size(101, 60);
+            btn_e.Size = new Size(120, 60);
             btn_e.TabIndex = 38;
             btn_e.Text = "e";
             btn_e.UseVisualStyleBackColor = false;
@@ -701,10 +702,10 @@
             btn_clear_all.BackColor = SystemColors.ButtonHighlight;
             btn_clear_all.Dock = DockStyle.Fill;
             btn_clear_all.Font = new Font("Segoe UI", 14.25F);
-            btn_clear_all.Location = new Point(324, 2);
+            btn_clear_all.Location = new Point(381, 2);
             btn_clear_all.Margin = new Padding(3, 2, 3, 2);
             btn_clear_all.Name = "btn_clear_all";
-            btn_clear_all.Size = new Size(101, 60);
+            btn_clear_all.Size = new Size(120, 60);
             btn_clear_all.TabIndex = 39;
             btn_clear_all.Text = "C";
             btn_clear_all.UseVisualStyleBackColor = false;
@@ -714,10 +715,10 @@
             btn_backspace.BackColor = SystemColors.ButtonHighlight;
             btn_backspace.Dock = DockStyle.Fill;
             btn_backspace.Font = new Font("Segoe UI", 14.25F);
-            btn_backspace.Location = new Point(431, 2);
+            btn_backspace.Location = new Point(507, 2);
             btn_backspace.Margin = new Padding(3, 2, 3, 2);
             btn_backspace.Name = "btn_backspace";
-            btn_backspace.Size = new Size(101, 60);
+            btn_backspace.Size = new Size(120, 60);
             btn_backspace.TabIndex = 4;
             btn_backspace.Text = "⌫";
             btn_backspace.UseVisualStyleBackColor = false;
@@ -727,10 +728,10 @@
             button4.BackColor = SystemColors.ButtonHighlight;
             button4.Dock = DockStyle.Fill;
             button4.Font = new Font("Segoe UI", 14.25F);
-            button4.Location = new Point(538, 66);
+            button4.Location = new Point(633, 66);
             button4.Margin = new Padding(3, 2, 3, 2);
             button4.Name = "button4";
-            button4.Size = new Size(105, 60);
+            button4.Size = new Size(121, 60);
             button4.TabIndex = 41;
             button4.Text = "Paste";
             button4.UseVisualStyleBackColor = false;
@@ -740,10 +741,10 @@
             btn_copy.BackColor = SystemColors.ButtonHighlight;
             btn_copy.Dock = DockStyle.Fill;
             btn_copy.Font = new Font("Segoe UI", 14.25F);
-            btn_copy.Location = new Point(538, 2);
+            btn_copy.Location = new Point(633, 2);
             btn_copy.Margin = new Padding(3, 2, 3, 2);
             btn_copy.Name = "btn_copy";
-            btn_copy.Size = new Size(105, 60);
+            btn_copy.Size = new Size(121, 60);
             btn_copy.TabIndex = 42;
             btn_copy.Text = "Copy";
             btn_copy.UseVisualStyleBackColor = false;
@@ -751,7 +752,7 @@
             // lbl_expression
             // 
             lbl_expression.AutoSize = true;
-            lbl_expression.BackColor = SystemColors.ButtonHighlight;
+            lbl_expression.BackColor = SystemColors.Control;
             lbl_expression.Dock = DockStyle.Fill;
             lbl_expression.Location = new Point(3, 99);
             lbl_expression.Name = "lbl_expression";
@@ -780,7 +781,7 @@
             tabPage2.Location = new Point(4, 45);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(652, 612);
+            tabPage2.Size = new Size(763, 612);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "FX Converter";
             tabPage2.UseVisualStyleBackColor = true;
@@ -844,7 +845,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666679F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666679F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 16.6666679F));
-            tableLayoutPanel2.Size = new Size(646, 322);
+            tableLayoutPanel2.Size = new Size(757, 322);
             tableLayoutPanel2.TabIndex = 11;
             // 
             // cmb_fx_from
@@ -865,7 +866,7 @@
             button2.Location = new Point(3, 55);
             button2.Margin = new Padding(3, 2, 3, 2);
             button2.Name = "button2";
-            button2.Size = new Size(209, 49);
+            button2.Size = new Size(246, 49);
             button2.TabIndex = 1;
             button2.Text = "Copy";
             button2.UseVisualStyleBackColor = false;
@@ -878,7 +879,7 @@
             btn_fx_digit_7.Location = new Point(3, 108);
             btn_fx_digit_7.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_7.Name = "btn_fx_digit_7";
-            btn_fx_digit_7.Size = new Size(209, 49);
+            btn_fx_digit_7.Size = new Size(246, 49);
             btn_fx_digit_7.TabIndex = 11;
             btn_fx_digit_7.Text = "7";
             btn_fx_digit_7.UseVisualStyleBackColor = false;
@@ -891,7 +892,7 @@
             btn_fx_digit_4.Location = new Point(3, 161);
             btn_fx_digit_4.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_4.Name = "btn_fx_digit_4";
-            btn_fx_digit_4.Size = new Size(209, 49);
+            btn_fx_digit_4.Size = new Size(246, 49);
             btn_fx_digit_4.TabIndex = 16;
             btn_fx_digit_4.Text = "4";
             btn_fx_digit_4.UseVisualStyleBackColor = false;
@@ -904,7 +905,7 @@
             btn_fx_digit_1.Location = new Point(3, 214);
             btn_fx_digit_1.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_1.Name = "btn_fx_digit_1";
-            btn_fx_digit_1.Size = new Size(209, 49);
+            btn_fx_digit_1.Size = new Size(246, 49);
             btn_fx_digit_1.TabIndex = 21;
             btn_fx_digit_1.Text = "1";
             btn_fx_digit_1.UseVisualStyleBackColor = false;
@@ -917,7 +918,7 @@
             btn_fx_decimal.Location = new Point(3, 267);
             btn_fx_decimal.Margin = new Padding(3, 2, 3, 2);
             btn_fx_decimal.Name = "btn_fx_decimal";
-            btn_fx_decimal.Size = new Size(209, 53);
+            btn_fx_decimal.Size = new Size(246, 53);
             btn_fx_decimal.TabIndex = 28;
             btn_fx_decimal.Text = ".";
             btn_fx_decimal.UseVisualStyleBackColor = false;
@@ -927,10 +928,10 @@
             btn_fx_convert.BackColor = SystemColors.ButtonHighlight;
             btn_fx_convert.Dock = DockStyle.Fill;
             btn_fx_convert.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_convert.Location = new Point(218, 2);
+            btn_fx_convert.Location = new Point(255, 2);
             btn_fx_convert.Margin = new Padding(3, 2, 3, 2);
             btn_fx_convert.Name = "btn_fx_convert";
-            btn_fx_convert.Size = new Size(209, 49);
+            btn_fx_convert.Size = new Size(246, 49);
             btn_fx_convert.TabIndex = 3;
             btn_fx_convert.Text = "Convert";
             btn_fx_convert.UseVisualStyleBackColor = false;
@@ -940,10 +941,10 @@
             btn_fx_paste.BackColor = SystemColors.ButtonHighlight;
             btn_fx_paste.Dock = DockStyle.Fill;
             btn_fx_paste.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_paste.Location = new Point(218, 55);
+            btn_fx_paste.Location = new Point(255, 55);
             btn_fx_paste.Margin = new Padding(3, 2, 3, 2);
             btn_fx_paste.Name = "btn_fx_paste";
-            btn_fx_paste.Size = new Size(209, 49);
+            btn_fx_paste.Size = new Size(246, 49);
             btn_fx_paste.TabIndex = 34;
             btn_fx_paste.Text = "Paste";
             btn_fx_paste.UseVisualStyleBackColor = false;
@@ -953,10 +954,10 @@
             btn_fx_digit_8.BackColor = SystemColors.ActiveCaption;
             btn_fx_digit_8.Dock = DockStyle.Fill;
             btn_fx_digit_8.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_8.Location = new Point(218, 108);
+            btn_fx_digit_8.Location = new Point(255, 108);
             btn_fx_digit_8.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_8.Name = "btn_fx_digit_8";
-            btn_fx_digit_8.Size = new Size(209, 49);
+            btn_fx_digit_8.Size = new Size(246, 49);
             btn_fx_digit_8.TabIndex = 12;
             btn_fx_digit_8.Text = "8";
             btn_fx_digit_8.UseVisualStyleBackColor = false;
@@ -966,10 +967,10 @@
             btn_fx_digit_5.BackColor = SystemColors.ActiveCaption;
             btn_fx_digit_5.Dock = DockStyle.Fill;
             btn_fx_digit_5.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_5.Location = new Point(218, 161);
+            btn_fx_digit_5.Location = new Point(255, 161);
             btn_fx_digit_5.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_5.Name = "btn_fx_digit_5";
-            btn_fx_digit_5.Size = new Size(209, 49);
+            btn_fx_digit_5.Size = new Size(246, 49);
             btn_fx_digit_5.TabIndex = 17;
             btn_fx_digit_5.Text = "5";
             btn_fx_digit_5.UseVisualStyleBackColor = false;
@@ -979,10 +980,10 @@
             btn_fx_digit_2.BackColor = SystemColors.ActiveCaption;
             btn_fx_digit_2.Dock = DockStyle.Fill;
             btn_fx_digit_2.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_2.Location = new Point(218, 214);
+            btn_fx_digit_2.Location = new Point(255, 214);
             btn_fx_digit_2.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_2.Name = "btn_fx_digit_2";
-            btn_fx_digit_2.Size = new Size(209, 49);
+            btn_fx_digit_2.Size = new Size(246, 49);
             btn_fx_digit_2.TabIndex = 22;
             btn_fx_digit_2.Text = "2";
             btn_fx_digit_2.UseVisualStyleBackColor = false;
@@ -992,10 +993,10 @@
             btn_fx_digit_0.BackColor = SystemColors.ActiveCaption;
             btn_fx_digit_0.Dock = DockStyle.Fill;
             btn_fx_digit_0.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_0.Location = new Point(218, 267);
+            btn_fx_digit_0.Location = new Point(255, 267);
             btn_fx_digit_0.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_0.Name = "btn_fx_digit_0";
-            btn_fx_digit_0.Size = new Size(209, 53);
+            btn_fx_digit_0.Size = new Size(246, 53);
             btn_fx_digit_0.TabIndex = 27;
             btn_fx_digit_0.Text = "0";
             btn_fx_digit_0.UseVisualStyleBackColor = false;
@@ -1004,7 +1005,7 @@
             // 
             cmb_fx_to.FormattingEnabled = true;
             cmb_fx_to.Items.AddRange(new object[] { "USD", "EUR", "LBP" });
-            cmb_fx_to.Location = new Point(433, 3);
+            cmb_fx_to.Location = new Point(507, 3);
             cmb_fx_to.Name = "cmb_fx_to";
             cmb_fx_to.Size = new Size(121, 44);
             cmb_fx_to.TabIndex = 35;
@@ -1015,10 +1016,10 @@
             btn_fx_backspace.BackColor = SystemColors.ButtonHighlight;
             btn_fx_backspace.Dock = DockStyle.Fill;
             btn_fx_backspace.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_backspace.Location = new Point(433, 55);
+            btn_fx_backspace.Location = new Point(507, 55);
             btn_fx_backspace.Margin = new Padding(3, 2, 3, 2);
             btn_fx_backspace.Name = "btn_fx_backspace";
-            btn_fx_backspace.Size = new Size(210, 49);
+            btn_fx_backspace.Size = new Size(247, 49);
             btn_fx_backspace.TabIndex = 31;
             btn_fx_backspace.Text = "⌫";
             btn_fx_backspace.UseVisualStyleBackColor = false;
@@ -1028,10 +1029,10 @@
             btn_fx_digit_9.BackColor = SystemColors.ActiveCaption;
             btn_fx_digit_9.Dock = DockStyle.Fill;
             btn_fx_digit_9.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_9.Location = new Point(433, 108);
+            btn_fx_digit_9.Location = new Point(507, 108);
             btn_fx_digit_9.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_9.Name = "btn_fx_digit_9";
-            btn_fx_digit_9.Size = new Size(210, 49);
+            btn_fx_digit_9.Size = new Size(247, 49);
             btn_fx_digit_9.TabIndex = 13;
             btn_fx_digit_9.Text = "9";
             btn_fx_digit_9.UseVisualStyleBackColor = false;
@@ -1041,10 +1042,10 @@
             btn_fx_digit_6.BackColor = SystemColors.ActiveCaption;
             btn_fx_digit_6.Dock = DockStyle.Fill;
             btn_fx_digit_6.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_6.Location = new Point(433, 161);
+            btn_fx_digit_6.Location = new Point(507, 161);
             btn_fx_digit_6.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_6.Name = "btn_fx_digit_6";
-            btn_fx_digit_6.Size = new Size(210, 49);
+            btn_fx_digit_6.Size = new Size(247, 49);
             btn_fx_digit_6.TabIndex = 18;
             btn_fx_digit_6.Text = "6";
             btn_fx_digit_6.UseVisualStyleBackColor = false;
@@ -1054,10 +1055,10 @@
             btn_fx_digit_3.BackColor = SystemColors.ActiveCaption;
             btn_fx_digit_3.Dock = DockStyle.Fill;
             btn_fx_digit_3.Font = new Font("Segoe UI", 14.25F);
-            btn_fx_digit_3.Location = new Point(433, 214);
+            btn_fx_digit_3.Location = new Point(507, 214);
             btn_fx_digit_3.Margin = new Padding(3, 2, 3, 2);
             btn_fx_digit_3.Name = "btn_fx_digit_3";
-            btn_fx_digit_3.Size = new Size(210, 49);
+            btn_fx_digit_3.Size = new Size(247, 49);
             btn_fx_digit_3.TabIndex = 23;
             btn_fx_digit_3.Text = "3";
             btn_fx_digit_3.UseVisualStyleBackColor = false;
@@ -1069,10 +1070,10 @@
             btn_fx_clear_all.Dock = DockStyle.Fill;
             btn_fx_clear_all.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btn_fx_clear_all.ForeColor = SystemColors.ActiveCaptionText;
-            btn_fx_clear_all.Location = new Point(433, 267);
+            btn_fx_clear_all.Location = new Point(507, 267);
             btn_fx_clear_all.Margin = new Padding(3, 2, 3, 2);
             btn_fx_clear_all.Name = "btn_fx_clear_all";
-            btn_fx_clear_all.Size = new Size(210, 53);
+            btn_fx_clear_all.Size = new Size(247, 53);
             btn_fx_clear_all.TabIndex = 29;
             btn_fx_clear_all.Text = "C";
             btn_fx_clear_all.UseVisualStyleBackColor = false;
@@ -1081,9 +1082,10 @@
             // 
             rad_light.AutoSize = true;
             rad_light.Checked = true;
-            rad_light.Location = new Point(695, 82);
+            rad_light.Font = new Font("Tahoma", 15F);
+            rad_light.Location = new Point(796, 93);
             rad_light.Name = "rad_light";
-            rad_light.Size = new Size(106, 44);
+            rad_light.Size = new Size(106, 40);
             rad_light.TabIndex = 9;
             rad_light.TabStop = true;
             rad_light.Text = "Light";
@@ -1092,9 +1094,10 @@
             // rad_dark
             // 
             rad_dark.AutoSize = true;
-            rad_dark.Location = new Point(695, 146);
+            rad_dark.Font = new Font("Tahoma", 15F);
+            rad_dark.Location = new Point(796, 157);
             rad_dark.Name = "rad_dark";
-            rad_dark.Size = new Size(101, 44);
+            rad_dark.Size = new Size(102, 40);
             rad_dark.TabIndex = 10;
             rad_dark.Text = "Dark";
             rad_dark.UseVisualStyleBackColor = true;
@@ -1102,9 +1105,10 @@
             // rad_midnight
             // 
             rad_midnight.AutoSize = true;
-            rad_midnight.Location = new Point(695, 211);
+            rad_midnight.Font = new Font("Tahoma", 15F);
+            rad_midnight.Location = new Point(796, 222);
             rad_midnight.Name = "rad_midnight";
-            rad_midnight.Size = new Size(158, 44);
+            rad_midnight.Size = new Size(155, 40);
             rad_midnight.TabIndex = 11;
             rad_midnight.Text = "Midnight";
             rad_midnight.UseVisualStyleBackColor = true;
@@ -1114,17 +1118,17 @@
             AutoScaleDimensions = new SizeF(16F, 40F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.None;
-            ClientSize = new Size(896, 661);
+            ClientSize = new Size(1094, 661);
             Controls.Add(rad_midnight);
             Controls.Add(rad_dark);
             Controls.Add(rad_light);
             Controls.Add(tabControl1);
             Font = new Font("Segoe UI", 14.25F);
             ForeColor = SystemColors.ActiveCaptionText;
-            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
-            Text = "Form1";
+            Text = "CSC208 Scientific Calculator";
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();

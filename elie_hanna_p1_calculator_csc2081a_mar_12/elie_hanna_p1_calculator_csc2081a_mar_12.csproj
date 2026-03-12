@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="calculate_math_currency_.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="calculate_math_currency_.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
